@@ -601,7 +601,7 @@ if __name__ == "__main__":
         phase2()
     elif args.phase1 or args.dry_run or args.generate_if_empty or args.force_pattern:
         phase1(generate_if_empty=args.generate_if_empty or bool(args.force_pattern),
-               dry_run=args.dry_run or bool(args.force_pattern),
+               dry_run=args.dry_run,
                force_pattern=args.force_pattern)
     else:
         parser.print_help()

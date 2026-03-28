@@ -51,6 +51,7 @@ jobs:
           git config user.email "bot@users.noreply.github.com"
           git add .processed.json .pending_plan.json output/
           git diff --staged --quiet || git commit -m "📸 carousel $(date +%Y-%m-%d)"
+          git pull --rebase origin main
           git push
 
       # Wait for GitHub's CDN to make the raw files publicly accessible
