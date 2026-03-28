@@ -95,5 +95,12 @@
     "generated_at": "2026-03-28T14:01:23.504813",
     "dry_run": true,
     "output": "output/20260328_1401_the_original_nature"
+  },
+  "auto_20260328_1412": {
+    "title": "The Personality You Never Chose",
+    "pattern": "cosmic_duality",
+    "generated_at": "2026-03-28T14:14:26.406202",
+    "dry_run": true,
+    "output": "output/20260328_1414_the_personality_you_never_chose"
   }
 }
