@@ -8,36 +8,57 @@ My philosophy: never explain the tree. Transmit. Transfer with feeling, not info
 ## How to work with me
 - Give me direct orders, I don't need hand-holding
 - I'm not technical — explain things simply when needed
-- I work across multiple projects, all living in this vault
+- I work across multiple projects
+
+## My Brain vault (second brain)
+Location: `C:\Users\Administrator\Brain\`
+Synced via: Obsidian Sync (across all devices including iPhone)
+
+**At the start of every session: read the Brain vault to get full context.**
+The vault contains notes on all projects, journal entries, philosophy, and downloads.
+
+Structure:
+- `Brain/Home.md` — start here for overview
+- `Brain/Projects/` — notes on each project
+- `Brain/Downloads/` — spiritual downloads queued for Instagram
+- `Brain/Journal/` — private writing
+- `Brain/Resources/My Voice and Philosophy.md` — voice, style, philosophy
+
+> Note: Claude reads local files only. Brain vault is synced from Obsidian cloud to local machine
+> automatically when Obsidian is open. Open Obsidian before starting a Claude session if notes
+> were added from phone.
 
 ## My projects
 
 ### 1. Instagram Automation (LIVE)
 Fully automated 7-slide carousel pipeline. Posts daily at 9am UTC to @alvvoayadcreates.
+- Code: `C:\Users\Administrator\instagram_system\`
 - GitHub: https://github.com/VVOAYAD/instagram-vault
 - Instagram User ID: 17841472919301425
 - Facebook Page ID: 1095552560298097
 - Meta App ID: 866371822870634
 - To trigger manually: `gh workflow run "Daily Instagram Post" --repo VVOAYAD/instagram-vault`
-- Token renewal due: ~late May 2026 (see Projects/Instagram Automation/Token renewal.md)
+- Token renewal due: ~late May 2026
 
 ### 2. SQU Financial Dashboard
-Built yesterday. GitHub: https://github.com/VVOAYAD/squ-financial-dashboard
+GitHub: https://github.com/VVOAYAD/squ-financial-dashboard
 
 ### 3. Oman Lifestyle Hub
 In progress. GitHub: https://github.com/VVOAYAD/oman-lifestyle-hub
-Next session: continue building it out.
 
-## Key file locations
+## Instagram automation — key files
 | File | What it does |
 |---|---|
-| `Downloads/` | Notes for Instagram — one .md file = one post |
-| `config.json` | Voice, style, post time, handle |
-| `pipeline.py` | The automation engine |
-| `carousel_maker.py` | Builds the 7 slides |
-| `.github/workflows/daily_post.yml` | Schedule (cron) |
-| `Projects/` | Notes about each project |
-| `Journal/` | Private writing, never posted |
+| `instagram_system/Downloads/` | Notes for Instagram — one .md file = one post |
+| `instagram_system/config.json` | Voice, style, post time, handle |
+| `instagram_system/pipeline.py` | The automation engine |
+| `instagram_system/carousel_maker.py` | Builds the 7 slides |
+| `instagram_system/.github/workflows/daily_post.yml` | Schedule (cron: 9am UTC) |
+
+## Carousel patterns (rotate automatically)
+1. The Gap — slow, expansive, deepens into the body
+2. The Cosmic Duality — single words across 4 slides → devastating sentence
+3. The Vibrational Anchor — direct, grounding, rhythmic
 
 ## GitHub CLI
 Installed at: `/c/Program Files/GitHub CLI/gh`
@@ -49,6 +70,6 @@ Located at: `C:\Users\Administrator\AppData\Local\Programs\Python\Python312\pyth
 Not on PATH — use full path for local runs
 
 ## Important rules
-- Instagram token expires every 60 days — remind me when due
-- Repo must stay Public (Instagram needs to fetch carousel images from it)
-- Downloads/ folder notes get auto-posted. Journal/ notes never do.
+- Instagram token expires every 60 days — next due late May 2026
+- Repo must stay Public (Instagram fetches carousel images from raw.githubusercontent.com)
+- Downloads/ notes get auto-posted. Journal/ notes never do.
