@@ -133,7 +133,7 @@ Return ONLY valid JSON:
   "slide_7_cta": "Save this.",
   "caption": "Full caption — no hashtags. Starts with the revelation, expands.",
   "hashtags": ["10", "to", "15", "hashtags"],
-  "image_prompt": "Flux prompt — 3D neo-classical sculpture, glitch or split effects, cinematic chiaroscuro, dark background with ethereal purple and teal light, NO text"
+  "image_prompt": "Flux prompt — 3D neo-classical marble sculpture, cracked and split down the center with light pouring through, cinematic chiaroscuro lighting, deep black background, ethereal purple and teal glow, chromatic aberration edges, flowers at the base, ultra-detailed, NO text in image"
 }}"""
 
 ANCHOR_ENTRY_PROMPT = """Transform this raw download into a 7-slide Instagram carousel using THE VIBRATIONAL ANCHOR pattern.
@@ -156,7 +156,7 @@ Return ONLY valid JSON:
   "slide_7_cta": "Save this if it hit.",
   "caption": "Full caption — no hashtags. Warm, direct, encouraging.",
   "hashtags": ["10", "to", "15", "hashtags"],
-  "image_prompt": "Flux prompt — retro-surrealism, dreamcore, warm gradients, glowing silhouette, film grain aesthetic, NO text in image"
+  "image_prompt": "Flux prompt — retro-surrealist dreamcore, vivid warm gradients, glowing ethereal human silhouette, film grain texture, saturated neon colours, surreal sky and landscape, NO text in image"
 }}"""
 
 # Auto-generate versions (no note context)
@@ -347,12 +347,10 @@ def phase1(generate_if_empty=False, dry_run=False):
 
     caption_text = build_caption(result)
 
-    # Generate AI background image for Slide 1
-    print("🎨  Generating background image via Replicate (Flux)...")
-    from image_gen import generate_image, download_image_bytes
-    bg_url = generate_image(result.get("image_prompt", ""), result, config)
-    print(f"    {bg_url[:80]}...")
-    bg_bytes = download_image_bytes(bg_url)
+    # Generate 7 unique AI background images — one per slide
+    print("🎨  Generating 7 background images via Replicate (Flux)...")
+    from image_gen import generate_slide_images
+    bg_bytes_list = generate_slide_images(result.get("image_prompt", ""), config, n_slides=7)
 
     # Build all 7 carousel slides with Pillow
     print("🖼️  Building 7 carousel slides...")
@@ -361,7 +359,7 @@ def phase1(generate_if_empty=False, dry_run=False):
     out_dir = OUTPUT_DIR / f"{timestamp}_{slug}"
 
     from carousel_maker import build_carousel
-    slide_paths = build_carousel(result, bg_bytes, config, out_dir)
+    slide_paths = build_carousel(result, bg_bytes_list, config, out_dir)
 
     # Save supporting files
     (out_dir / "caption.txt").write_text(caption_text, encoding="utf-8")

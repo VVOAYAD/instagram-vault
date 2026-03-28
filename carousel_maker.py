@@ -328,12 +328,12 @@ def slide_cta(cta_text: str, config: dict, bg_bytes: bytes = None) -> Image.Imag
     return img
 
 
-def build_carousel_gap(slides: dict, bg_bytes: bytes, config: dict, out_dir: Path) -> list:
+def build_carousel_gap(slides: dict, bg_list: list, config: dict, out_dir: Path) -> list:
     out_dir.mkdir(parents=True, exist_ok=True)
     paths = []
     print("  Building slides (Pattern: The Gap)...")
 
-    img = slide_hook(slides["slide_1_hook"], bg_bytes, config)
+    img = slide_hook(slides["slide_1_hook"], bg_list[0], config)
     p = out_dir / "slide_01.jpg"
     img.save(str(p), "JPEG", quality=92)
     paths.append(p)
@@ -341,13 +341,13 @@ def build_carousel_gap(slides: dict, bg_bytes: bytes, config: dict, out_dir: Pat
 
     for n in range(2, 7):
         data = slides.get(f"slide_{n}", {})
-        img = slide_content(n, data.get("text", ""), data.get("eyebrow", ""), config, bg_bytes)
+        img = slide_content(n, data.get("text", ""), data.get("eyebrow", ""), config, bg_list[n - 1])
         p = out_dir / f"slide_{n:02d}.jpg"
         img.save(str(p), "JPEG", quality=92)
         paths.append(p)
         print(f"    ✓ Slide {n}")
 
-    img = slide_cta(slides["slide_7_cta"], config, bg_bytes)
+    img = slide_cta(slides["slide_7_cta"], config, bg_list[6])
     p = out_dir / "slide_07.jpg"
     img.save(str(p), "JPEG", quality=92)
     paths.append(p)
@@ -444,33 +444,33 @@ def slide_cosmic_reveal(n: int, text: str, bg_bytes: bytes, config: dict) -> Ima
     return bg
 
 
-def build_carousel_cosmic(slides: dict, bg_bytes: bytes, config: dict, out_dir: Path) -> list:
+def build_carousel_cosmic(slides: dict, bg_list: list, config: dict, out_dir: Path) -> list:
     out_dir.mkdir(parents=True, exist_ok=True)
     paths = []
     print("  Building slides (Pattern: Cosmic Duality)...")
 
     for n in range(1, 5):
         word = slides.get(f"slide_{n}_word", "")
-        img = slide_cosmic_word(n, word, bg_bytes, config)
+        img = slide_cosmic_word(n, word, bg_list[n - 1], config)
         p = out_dir / f"slide_{n:02d}.jpg"
         img.save(str(p), "JPEG", quality=92)
         paths.append(p)
         print(f"    ✓ Slide {n} ({word})")
 
-    img = slide_cosmic_reveal(5, slides.get("slide_5_revelation", ""), bg_bytes, config)
+    img = slide_cosmic_reveal(5, slides.get("slide_5_revelation", ""), bg_list[4], config)
     p = out_dir / "slide_05.jpg"
     img.save(str(p), "JPEG", quality=92)
     paths.append(p)
     print("    ✓ Slide 5 (revelation)")
 
     data = slides.get("slide_6", {})
-    img = slide_content(6, data.get("text", ""), data.get("eyebrow", ""), config, bg_bytes)
+    img = slide_content(6, data.get("text", ""), data.get("eyebrow", ""), config, bg_list[5])
     p = out_dir / "slide_06.jpg"
     img.save(str(p), "JPEG", quality=92)
     paths.append(p)
     print("    ✓ Slide 6")
 
-    img = slide_cta(slides["slide_7_cta"], config, bg_bytes)
+    img = slide_cta(slides["slide_7_cta"], config, bg_list[6])
     p = out_dir / "slide_07.jpg"
     img.save(str(p), "JPEG", quality=92)
     paths.append(p)
@@ -634,12 +634,12 @@ def slide_anchor_cta(cta_text: str, config: dict, bg_bytes: bytes = None) -> Ima
     return img
 
 
-def build_carousel_anchor(slides: dict, bg_bytes: bytes, config: dict, out_dir: Path) -> list:
+def build_carousel_anchor(slides: dict, bg_list: list, config: dict, out_dir: Path) -> list:
     out_dir.mkdir(parents=True, exist_ok=True)
     paths = []
     print("  Building slides (Pattern: Vibrational Anchor)...")
 
-    img = slide_anchor_hook(slides["slide_1_hook"], bg_bytes, config)
+    img = slide_anchor_hook(slides["slide_1_hook"], bg_list[0], config)
     p = out_dir / "slide_01.jpg"
     img.save(str(p), "JPEG", quality=92)
     paths.append(p)
@@ -647,13 +647,13 @@ def build_carousel_anchor(slides: dict, bg_bytes: bytes, config: dict, out_dir: 
 
     for n in range(2, 7):
         text = slides.get(f"slide_{n}", "")
-        img = slide_anchor(n, text, config, bg_bytes)
+        img = slide_anchor(n, text, config, bg_list[n - 1])
         p = out_dir / f"slide_{n:02d}.jpg"
         img.save(str(p), "JPEG", quality=92)
         paths.append(p)
         print(f"    ✓ Slide {n}")
 
-    img = slide_anchor_cta(slides["slide_7_cta"], config, bg_bytes)
+    img = slide_anchor_cta(slides["slide_7_cta"], config, bg_list[6])
     p = out_dir / "slide_07.jpg"
     img.save(str(p), "JPEG", quality=92)
     paths.append(p)
@@ -664,15 +664,24 @@ def build_carousel_anchor(slides: dict, bg_bytes: bytes, config: dict, out_dir: 
 
 # ── Main dispatcher ───────────────────────────────────────────────────────
 
-def build_carousel(slides: dict, bg_bytes: bytes, config: dict, out_dir: Path) -> list:
+def build_carousel(slides: dict, bg_bytes_input, config: dict, out_dir: Path) -> list:
     """
     Build carousel — dispatches to the right pattern builder.
+    bg_bytes_input: either a list of 7 bytes objects (one per slide) or a single bytes object.
     slides must contain a 'pattern' key: 'gap', 'cosmic_duality', or 'vibrational_anchor'
     """
+    # Normalise: always work with a list of 7
+    if isinstance(bg_bytes_input, (bytes, bytearray)):
+        bg_list = [bg_bytes_input] * 7
+    else:
+        bg_list = list(bg_bytes_input)
+        while len(bg_list) < 7:
+            bg_list.append(bg_list[-1])
+
     pattern = slides.get("pattern", "gap")
     if pattern == "cosmic_duality":
-        return build_carousel_cosmic(slides, bg_bytes, config, out_dir)
+        return build_carousel_cosmic(slides, bg_list, config, out_dir)
     elif pattern == "vibrational_anchor":
-        return build_carousel_anchor(slides, bg_bytes, config, out_dir)
+        return build_carousel_anchor(slides, bg_list, config, out_dir)
     else:
-        return build_carousel_gap(slides, bg_bytes, config, out_dir)
+        return build_carousel_gap(slides, bg_list, config, out_dir)
