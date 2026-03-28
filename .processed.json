@@ -88,5 +88,12 @@
     "generated_at": "2026-03-28T13:44:16.910236",
     "dry_run": true,
     "output": "output/20260328_1344_i_was_never_the_strange_one"
+  },
+  "auto_20260328_1359": {
+    "title": "The Original Nature",
+    "pattern": "scripture_card",
+    "generated_at": "2026-03-28T14:01:23.504813",
+    "dry_run": true,
+    "output": "output/20260328_1401_the_original_nature"
   }
 }
