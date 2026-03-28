@@ -3,9 +3,10 @@ Journal/
 Downloads/
 .obsidian/
 
-# Pipeline state
+# Pipeline state (local only)
 .processed.json
 .pending_plan.json
-output/
 __pycache__/
 *.pyc
+
+# output/ must stay tracked — Instagram fetches slide images from GitHub CDN
