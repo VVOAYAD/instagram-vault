@@ -16,21 +16,29 @@ W, H = 1080, 1080
 
 # ── Fonts ─────────────────────────────────────────────────────────────────
 
+_FONTS_DIR = Path(__file__).parent / "fonts"
+
 _SERIF = [
+    str(_FONTS_DIR / "PlayfairDisplay-Regular.ttf"),
+    "C:/Windows/Fonts/cambria.ttc",
     "C:/Windows/Fonts/georgia.ttf",
     "C:/Windows/Fonts/Georgia.ttf",
     "C:/Windows/Fonts/times.ttf",
     "C:/Windows/Fonts/arial.ttf",
 ]
 _ITALIC = [
+    str(_FONTS_DIR / "PlayfairDisplay-Regular.ttf"),
+    "C:/Windows/Fonts/cambriai.ttf",
     "C:/Windows/Fonts/georgiai.ttf",
     "C:/Windows/Fonts/timesi.ttf",
     "C:/Windows/Fonts/ariali.ttf",
     "C:/Windows/Fonts/arial.ttf",
 ]
 _BOLD = [
+    str(_FONTS_DIR / "Montserrat-Bold.ttf"),
+    "C:/Windows/Fonts/segoeuib.ttf",
+    "C:/Windows/Fonts/calibrib.ttf",
     "C:/Windows/Fonts/arialbd.ttf",
-    "C:/Windows/Fonts/Arial Bold.ttf",
     "C:/Windows/Fonts/arial.ttf",
 ]
 _cache: dict = {}
@@ -106,8 +114,8 @@ def _slide_number(draw: ImageDraw.Draw, n: int, total: int, accent: str):
 
 
 def _swipe_arrow(draw: ImageDraw.Draw, accent: str):
-    font = _font(28, italic=True)
-    draw.text((W - 64, H - 70), "→", font=font, fill=_rgba(accent, 150))
+    font = _font(24, bold=True)
+    draw.text((W - 72, H - 68), ">>", font=font, fill=_rgba(accent, 140))
 
 
 def _accent_line(img: Image.Image, cx: int, y: int, half_w: int, accent: str, alpha: int = 150):
@@ -117,12 +125,20 @@ def _accent_line(img: Image.Image, cx: int, y: int, half_w: int, accent: str, al
     img.paste(ov, mask=ov)
 
 
-def _crop_bg(bg_bytes: bytes) -> Image.Image:
-    """Load image bytes, crop to square, resize to 1080."""
+def _crop_bg(bg_bytes: bytes, variation: int = 0) -> Image.Image:
+    """Load image bytes, crop to square, resize to 1080.
+    variation 0-4 gives slightly different crops for visual diversity."""
     bg = Image.open(io.BytesIO(bg_bytes)).convert("RGB")
     bw, bh = bg.size
     s = min(bw, bh)
-    bg = bg.crop(((bw - s) // 2, (bh - s) // 2, (bw + s) // 2, (bh + s) // 2))
+    # Slight offset per variation so each slide feels different
+    offsets = [(0, 0), (-20, -20), (20, -20), (-20, 20), (20, 20)]
+    ox, oy = offsets[variation % len(offsets)]
+    cx = (bw - s) // 2 + ox
+    cy = (bh - s) // 2 + oy
+    cx = max(0, min(cx, bw - s))
+    cy = max(0, min(cy, bh - s))
+    bg = bg.crop((cx, cy, cx + s, cy + s))
     return bg.resize((W, H), Image.LANCZOS)
 
 
@@ -195,8 +211,9 @@ def slide_content(n: int, text: str, eyebrow: str, config: dict) -> Image.Image:
         fs, max_w = 30, W - 100
 
     font = _font(fs)
-    lh = int(fs * 1.48)
     lines = _wrap(text, font, draw, max_w)
+    sample_bb = draw.textbbox((0, 0), "Ag", font=font)
+    lh = int((sample_bb[3] - sample_bb[1]) * 1.55)
     text_h = len(lines) * lh
 
     eb_font = _font(22, italic=True)
@@ -296,7 +313,7 @@ _COSMIC_ACCENTS = ["#7C3AED", "#0EA5E9", "#14B8A6", "#8B5CF6", "#06B6D4"]
 
 def slide_cosmic_word(n: int, word: str, bg_bytes: bytes, config: dict) -> Image.Image:
     """Single large word on AI background with neon glow."""
-    bg = _crop_bg(bg_bytes)
+    bg = _crop_bg(bg_bytes, variation=n)
 
     veil = Image.new("RGBA", (W, H), (0, 0, 0, 170))
     bg = bg.convert("RGBA")
@@ -318,24 +335,27 @@ def slide_cosmic_word(n: int, word: str, bg_bytes: bytes, config: dict) -> Image
         fs -= 10
         font = _font(fs, italic=True)
 
-    word_w = _tw(draw, word, font)
-    word_h = _th(draw, word, font)
-    x = (W - word_w) // 2
-    y = (H - word_h) // 2
+    # Use bounding box for precise centering
+    bb = draw.textbbox((0, 0), word, font=font)
+    word_w = bb[2] - bb[0]
+    word_h = bb[3] - bb[1]
+    x = (W - word_w) // 2 - bb[0]
+    y = (H - word_h) // 2 - bb[1]
 
     # Neon glow behind text
     glow_ov = Image.new("RGBA", (W, H), (0, 0, 0, 0))
     gd = ImageDraw.Draw(glow_ov)
-    pad = 50
-    gd.rectangle([x - pad, y - pad, x + word_w + pad, y + word_h + pad],
-                 fill=(*_rgb(accent_hex), 70))
-    glow_ov = glow_ov.filter(ImageFilter.GaussianBlur(40))
+    pad = 60
+    gd.rectangle([x + bb[0] - pad, y + bb[1] - pad,
+                  x + bb[2] + pad, y + bb[3] + pad],
+                 fill=(*_rgb(accent_hex), 60))
+    glow_ov = glow_ov.filter(ImageFilter.GaussianBlur(45))
     bg = bg.convert("RGBA")
     bg.paste(glow_ov, mask=glow_ov)
     bg = bg.convert("RGB")
 
     draw = ImageDraw.Draw(bg)
-    draw.text((x + 3, y + 3), word, font=font, fill=(0, 0, 0))
+    draw.text((x + 2, y + 2), word, font=font, fill=(0, 0, 0, 180))
     draw.text((x, y), word, font=font, fill=_rgb("#F0EBE0"))
 
     return bg
@@ -464,12 +484,14 @@ def slide_anchor(n: int, text: str, config: dict) -> Image.Image:
         fs, max_w = 38, W - 100
 
     font = _font(fs, bold=True)
-    lh = int(fs * 1.52)
     lines = _wrap(text, font, draw, max_w)
+    # Measure actual line height from font
+    sample_bb = draw.textbbox((0, 0), "Ag", font=font)
+    lh = int((sample_bb[3] - sample_bb[1]) * 1.5)
     total_h = len(lines) * lh
     y0 = (H - total_h) // 2
 
-    _accent_line(img, W // 2, y0 - 40, 64, accent_hex, alpha=200)
+    _accent_line(img, W // 2, y0 - 44, 64, accent_hex, alpha=200)
 
     for i, line in enumerate(lines):
         y = y0 + i * lh

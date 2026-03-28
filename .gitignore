@@ -1,0 +1,11 @@
+# Personal data — stays local only
+Journal/
+Downloads/
+.obsidian/
+
+# Pipeline state
+.processed.json
+.pending_plan.json
+output/
+__pycache__/
+*.pyc
