@@ -74,5 +74,12 @@
     "generated_at": "2026-03-28T13:34:16.911701",
     "dry_run": true,
     "output": "output/20260328_1334_the_sacred_interval"
+  },
+  "auto_20260328_1337": {
+    "title": "The Descent of Stillness",
+    "pattern": "scripture_card",
+    "generated_at": "2026-03-28T13:39:50.277800",
+    "dry_run": true,
+    "output": "output/20260328_1339_the_descent_of_stillness"
   }
 }
