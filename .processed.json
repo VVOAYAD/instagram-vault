@@ -123,5 +123,12 @@
     "generated_at": "2026-03-28T15:59:07.803059",
     "dry_run": false,
     "output": "output/20260328_1559_the_witnessing"
+  },
+  "auto_20260328_1601": {
+    "title": "Buried Alive",
+    "pattern": "cosmic_duality",
+    "generated_at": "2026-03-28T16:03:22.361630",
+    "dry_run": false,
+    "output": "output/20260328_1603_buried_alive"
   }
 }
