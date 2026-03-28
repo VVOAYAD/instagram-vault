@@ -1,6 +1,7 @@
 """
-Image generation via Replicate (Flux Schnell model).
-~$0.003 per image. Generates 7 unique images per carousel — one per slide.
+Image generation via Replicate (Flux 1.1 Pro model).
+~$0.04 per image. Generates 7 unique images per carousel — one per slide.
+~$0.28 per post, ~$8/month for daily posting.
 """
 
 import os
@@ -69,20 +70,21 @@ def _replicate(prompt: str, token: str, config: dict) -> str:
 
     client = replicate.Client(api_token=token)
     output = client.run(
-        "black-forest-labs/flux-schnell",
+        "black-forest-labs/flux-1.1-pro",
         input={
             "prompt": full_prompt,
             "aspect_ratio": "1:1",
             "output_format": "jpg",
             "output_quality": 95,
-            "num_outputs": 1,
-            "go_fast": True,
+            "safety_tolerance": 2,
+            "prompt_upsampling": True,
         },
     )
 
     if not output:
         raise ValueError("Replicate returned no output")
-    url = str(output[0])
+    # flux-1.1-pro returns a single FileOutput; flux-schnell returned a list
+    url = str(output[0]) if isinstance(output, (list, tuple)) else str(output)
     if not url.startswith("http"):
         raise ValueError(f"Unexpected Replicate output: {url[:100]}")
     return url

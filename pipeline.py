@@ -110,7 +110,7 @@ Return ONLY valid JSON:
   "slide_7_cta": "Save this if it hit.",
   "caption": "Full caption — no hashtags. Hook + 3-4 lines + one reflection question.",
   "hashtags": ["10", "to", "15", "hashtags"],
-  "image_prompt": "Flux prompt — dark, ethereal, abstract, consciousness-themed, NO text in image, cinematic"
+  "image_prompt": "Flux prompt — dark ethereal abstract void, slow luminous light dispersing through black space, ink dissolving in deep water, microscopic cellular forms barely lit, cinematic chiaroscuro, ultra-minimal, photorealistic, NO text, NO words, NO letters in image"
 }}"""
 
 COSMIC_ENTRY_PROMPT = """Transform this raw download into a 7-slide Instagram carousel using THE COSMIC DUALITY pattern.
@@ -133,7 +133,7 @@ Return ONLY valid JSON:
   "slide_7_cta": "Save this.",
   "caption": "Full caption — no hashtags. Starts with the revelation, expands.",
   "hashtags": ["10", "to", "15", "hashtags"],
-  "image_prompt": "Flux prompt — 3D neo-classical marble sculpture, cracked and split down the center with light pouring through, cinematic chiaroscuro lighting, deep black background, ethereal purple and teal glow, chromatic aberration edges, flowers at the base, ultra-detailed, NO text in image"
+  "image_prompt": "Flux prompt — hyper-detailed 3D neo-classical marble statue, body cracked and split vertically down the center, blinding white-gold light pouring through the split, deep jet-black background, subtle chromatic aberration at crack edges, scattered white and pale pink flowers at the base, teal and violet spectral light halo, cinematic studio lighting, photorealistic render, ultra-sharp, NO text, NO words, NO letters in image"
 }}"""
 
 ANCHOR_ENTRY_PROMPT = """Transform this raw download into a 7-slide Instagram carousel using THE VIBRATIONAL ANCHOR pattern.
@@ -156,7 +156,7 @@ Return ONLY valid JSON:
   "slide_7_cta": "Save this if it hit.",
   "caption": "Full caption — no hashtags. Warm, direct, encouraging.",
   "hashtags": ["10", "to", "15", "hashtags"],
-  "image_prompt": "Flux prompt — retro-surrealist dreamcore, vivid warm gradients, glowing ethereal human silhouette, film grain texture, saturated neon colours, surreal sky and landscape, NO text in image"
+  "image_prompt": "Flux prompt — retro-surrealist dreamcore, lone glowing human silhouette standing in vast surreal landscape, warm amber-peach-violet gradient sky, soft film grain texture, muted neon glow, painterly atmosphere, golden hour light bleeding through clouds, slight lens distortion, cinematic widescreen feel, NO text, NO words, NO letters in image"
 }}"""
 
 # Auto-generate versions (no note context)
@@ -180,7 +180,7 @@ Return ONLY valid JSON:
   "slide_7_cta": "Save this if it hit.",
   "caption": "Full caption — no hashtags",
   "hashtags": ["10", "hashtags"],
-  "image_prompt": "Dark ethereal abstract background — NO text"
+  "image_prompt": "Dark ethereal abstract void, luminous light dissolving through black space, NO text, NO words in image"
 }}"""
 
 COSMIC_AUTO_PROMPT = """Study these existing downloads:
@@ -203,7 +203,7 @@ Return ONLY valid JSON:
   "slide_7_cta": "Save this.",
   "caption": "Full caption — no hashtags",
   "hashtags": ["10", "hashtags"],
-  "image_prompt": "3D neo-classical sculpture, dark ethereal, neon accents — NO text"
+  "image_prompt": "Hyper-detailed 3D neo-classical marble statue split down the center, light pouring through, flowers at base, deep black background, NO text, NO words in image"
 }}"""
 
 ANCHOR_AUTO_PROMPT = """Study these existing downloads:
@@ -226,7 +226,7 @@ Return ONLY valid JSON:
   "slide_7_cta": "Save this if it hit.",
   "caption": "Full caption — no hashtags",
   "hashtags": ["10", "hashtags"],
-  "image_prompt": "Retro-surrealist dreamcore, warm gradients, glowing silhouette — NO text"
+  "image_prompt": "Retro-surrealist dreamcore, glowing human silhouette, warm amber-violet sky, film grain, NO text, NO words in image"
 }}"""
 
 EMPTY_VAULT_PROMPTS = {
