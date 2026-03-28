@@ -116,5 +116,12 @@
     "generated_at": "2026-03-28T15:55:47.537427",
     "dry_run": false,
     "output": "output/20260328_1555_the_body_knew_first"
+  },
+  "auto_20260328_1557": {
+    "title": "The Witnessing",
+    "pattern": "scripture_card",
+    "generated_at": "2026-03-28T15:59:07.803059",
+    "dry_run": false,
+    "output": "output/20260328_1559_the_witnessing"
   }
 }
