@@ -4,5 +4,12 @@
     "generated_at": "2026-03-28T09:41:52.731593",
     "dry_run": false,
     "output": "output/20260328_0941_the_body_hasn_t_heard_you_yet"
+  },
+  "auto_20260328_1010": {
+    "title": "The Gap Between Stillness and Numbness",
+    "pattern": "gap",
+    "generated_at": "2026-03-28T10:10:10.130590",
+    "dry_run": false,
+    "output": "output/20260328_1010_the_gap_between_stillness_and_numbness"
   }
 }
