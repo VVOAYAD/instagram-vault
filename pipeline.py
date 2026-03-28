@@ -442,7 +442,7 @@ def build_caption(result):
 
 # ── Phase 1: Generate content + slides ────────────────────────────────────
 
-def phase1(generate_if_empty=False, dry_run=False):
+def phase1(generate_if_empty=False, dry_run=False, force_pattern=None):
     config = load_config()
     processed = load_processed()
     notes = get_notes(config)
@@ -451,10 +451,10 @@ def phase1(generate_if_empty=False, dry_run=False):
     note = None
     auto_mode = False
 
-    if unprocessed:
+    if unprocessed and not force_pattern:
         note = unprocessed[0]
         print(f"📝  Note: {note['title']}")
-    elif generate_if_empty:
+    elif generate_if_empty or force_pattern:
         print("📝  No new notes — auto-generating from vault themes...")
         auto_mode = True
     else:
@@ -468,7 +468,10 @@ def phase1(generate_if_empty=False, dry_run=False):
         sys.exit(1)
     client = anthropic.Anthropic(api_key=api_key)
 
-    pattern = _pick_pattern(processed)
+    pattern = force_pattern if force_pattern and force_pattern in _ALL_PATTERNS else _pick_pattern(processed)
+    if force_pattern and force_pattern not in _ALL_PATTERNS:
+        print(f"❌  Unknown pattern '{force_pattern}'. Options: {', '.join(_ALL_PATTERNS)}")
+        sys.exit(1)
     print(f"⚡  Generating carousel content via Claude (pattern: {pattern})...")
     if auto_mode:
         result = auto_generate_carousel(notes, config, client, pattern)
@@ -590,11 +593,15 @@ if __name__ == "__main__":
     parser.add_argument("--phase2", action="store_true", help="Post carousel to Instagram")
     parser.add_argument("--dry-run", action="store_true", help="Phase 1 only, no Instagram post")
     parser.add_argument("--generate-if-empty", action="store_true", help="Auto-generate if no new notes")
+    parser.add_argument("--force-pattern", type=str, default=None,
+                        help=f"Force a specific pattern. Options: {', '.join(_ALL_PATTERNS)}")
     args = parser.parse_args()
 
     if args.phase2:
         phase2()
-    elif args.phase1 or args.dry_run or args.generate_if_empty:
-        phase1(generate_if_empty=args.generate_if_empty, dry_run=args.dry_run)
+    elif args.phase1 or args.dry_run or args.generate_if_empty or args.force_pattern:
+        phase1(generate_if_empty=args.generate_if_empty or bool(args.force_pattern),
+               dry_run=args.dry_run or bool(args.force_pattern),
+               force_pattern=args.force_pattern)
     else:
         parser.print_help()

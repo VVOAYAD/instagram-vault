@@ -1,0 +1,80 @@
+name: Preview All Patterns
+
+on:
+  workflow_dispatch:
+    inputs:
+      pattern:
+        description: 'Pattern to preview (leave empty for all)'
+        required: false
+        default: ''
+
+permissions:
+  contents: write
+
+jobs:
+  preview:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: |
+          pip install anthropic replicate requests Pillow
+          sudo apt-get install -y fonts-liberation fonts-dejavu 2>/dev/null || true
+
+      - name: Preview — gap
+        if: ${{ github.event.inputs.pattern == '' || github.event.inputs.pattern == 'gap' }}
+        run: python pipeline.py --force-pattern gap
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          REPLICATE_API_TOKEN: ${{ secrets.REPLICATE_API_TOKEN }}
+
+      - name: Preview — cosmic_duality
+        if: ${{ github.event.inputs.pattern == '' || github.event.inputs.pattern == 'cosmic_duality' }}
+        run: python pipeline.py --force-pattern cosmic_duality
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          REPLICATE_API_TOKEN: ${{ secrets.REPLICATE_API_TOKEN }}
+
+      - name: Preview — vibrational_anchor
+        if: ${{ github.event.inputs.pattern == '' || github.event.inputs.pattern == 'vibrational_anchor' }}
+        run: python pipeline.py --force-pattern vibrational_anchor
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          REPLICATE_API_TOKEN: ${{ secrets.REPLICATE_API_TOKEN }}
+
+      - name: Preview — alien_affirmation
+        if: ${{ github.event.inputs.pattern == '' || github.event.inputs.pattern == 'alien_affirmation' }}
+        run: python pipeline.py --force-pattern alien_affirmation
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          REPLICATE_API_TOKEN: ${{ secrets.REPLICATE_API_TOKEN }}
+
+      - name: Preview — anime_meme
+        if: ${{ github.event.inputs.pattern == '' || github.event.inputs.pattern == 'anime_meme' }}
+        run: python pipeline.py --force-pattern anime_meme
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          REPLICATE_API_TOKEN: ${{ secrets.REPLICATE_API_TOKEN }}
+
+      - name: Preview — scripture_card
+        if: ${{ github.event.inputs.pattern == '' || github.event.inputs.pattern == 'scripture_card' }}
+        run: python pipeline.py --force-pattern scripture_card
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          REPLICATE_API_TOKEN: ${{ secrets.REPLICATE_API_TOKEN }}
+
+      - name: Commit all preview slides
+        run: |
+          git config user.name "instagram-bot"
+          git config user.email "bot@users.noreply.github.com"
+          git add .processed.json output/
+          git diff --staged --quiet || git commit -m "🎨 pattern previews $(date +%Y-%m-%d)"
+          git push
