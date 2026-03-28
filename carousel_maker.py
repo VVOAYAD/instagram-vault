@@ -801,6 +801,148 @@ def build_carousel_anime(slides: dict, bg_list: list, config: dict, out_dir: Pat
     return paths
 
 
+# ── Pattern 5+: Generic builder (for learned patterns) ───────────────────
+
+def build_carousel_generic(slides: dict, bg_list: list, config: dict, out_dir: Path) -> list:
+    """
+    Generic builder for patterns loaded from learned_patterns.json.
+    Visual behaviour is driven by slides['_style'] parameters.
+    """
+    out_dir.mkdir(parents=True, exist_ok=True)
+    paths = []
+    style = slides.get("_style", {})
+    pattern = slides.get("pattern", "generic")
+    print(f"  Building slides (Pattern: {slides.get('_display_name', pattern)})...")
+
+    bg_treatment = style.get("bg_treatment", "dim")   # none | dim | very_dim | white_card
+    text_position = style.get("text_position", "center")  # center | lower_third | upper
+    font_name = style.get("font", "serif")             # serif | bold | italic
+    text_color_key = style.get("text_color", "white")  # white | dark
+    use_outline = style.get("text_outline", False)
+    accent_hex = style.get("accent_color", "#C4A97D")
+    show_slide_num = style.get("slide_number", True)
+    fixed_header = slides.get("header", "")
+    fixed_subtitle = slides.get("subtitle", "")
+    slide_texts = slides.get("slides", [])
+
+    text_rgb = (255, 255, 255) if text_color_key == "white" else (20, 20, 30)
+    shadow_rgb = (0, 0, 0) if text_color_key == "white" else (200, 200, 210)
+
+    for n in range(1, 8):
+        bg_bytes = bg_list[n - 1]
+        bg = _crop_bg(bg_bytes, variation=n % 5)
+
+        # ── Background treatment ──────────────────────────────────────────
+        if bg_treatment == "none":
+            img = bg.convert("RGB")
+        elif bg_treatment == "dim":
+            veil = Image.new("RGBA", (W, H), (0, 0, 0, 160))
+            bg = bg.convert("RGBA")
+            bg.paste(veil, mask=veil)
+            img = bg.convert("RGB")
+        elif bg_treatment == "very_dim":
+            veil = Image.new("RGBA", (W, H), (0, 0, 0, 210))
+            bg = bg.convert("RGBA")
+            bg.paste(veil, mask=veil)
+            img = bg.convert("RGB")
+        elif bg_treatment == "white_card":
+            img = bg.convert("RGB")
+            # Draw semi-transparent white card over center
+            card_ov = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+            cd = ImageDraw.Draw(card_ov)
+            pad_x, pad_y = 90, 100
+            cd.rounded_rectangle(
+                [pad_x, pad_y, W - pad_x, H - pad_y],
+                radius=18, fill=(255, 255, 255, 240)
+            )
+            img = img.convert("RGBA")
+            img.paste(card_ov, mask=card_ov)
+            img = img.convert("RGB")
+        else:
+            img = bg.convert("RGB")
+
+        draw = ImageDraw.Draw(img)
+
+        if show_slide_num:
+            _slide_number(draw, n, 7, accent_hex)
+            if n < 7:
+                _swipe_arrow(draw, accent_hex)
+
+        # ── Fixed header (same on every slide) ───────────────────────────
+        header_bottom_y = 0
+        card_top = 100 if bg_treatment == "white_card" else 0
+        card_bottom = H - 100 if bg_treatment == "white_card" else H
+
+        if fixed_header.strip():
+            h_font = _font(44, italic=(font_name == "italic"))
+            h_text = _clean(fixed_header)
+            hw = _tw(draw, h_text, h_font)
+            hx = (W - hw) // 2
+            hy = card_top + 50
+            draw.text((hx, hy), h_text, font=h_font, fill=text_rgb)
+            header_bottom_y = hy + _th(draw, h_text, h_font) + 6
+
+            if fixed_subtitle.strip():
+                s_font = _font(28, italic=True)
+                s_text = _clean(fixed_subtitle)
+                sw = _tw(draw, s_text, s_font)
+                draw.text(((W - sw) // 2, header_bottom_y), s_text,
+                          font=s_font, fill=_rgba(accent_hex, 200))
+                header_bottom_y += _th(draw, s_text, s_font) + 16
+
+            # Thin divider under header block
+            _accent_line(img, W // 2, header_bottom_y + 8, 80, accent_hex, alpha=140)
+            header_bottom_y += 24
+
+        # ── Slide text ────────────────────────────────────────────────────
+        slide_text = _clean(slide_texts[n - 1] if n - 1 < len(slide_texts) else "")
+        nc = len(slide_text)
+        if nc < 40:
+            fs, max_w = 58, W - 200
+        elif nc < 80:
+            fs, max_w = 46, W - 180
+        elif nc < 140:
+            fs, max_w = 38, W - 160
+        else:
+            fs, max_w = 30, W - 140
+
+        is_bold = font_name == "bold"
+        is_italic = font_name == "italic"
+        font = _font(fs, italic=is_italic, bold=is_bold)
+        lines = _wrap(slide_text, font, draw, max_w)
+        lh = int(fs * 1.5)
+        total_h = len(lines) * lh
+
+        # Determine vertical position
+        usable_top = header_bottom_y if header_bottom_y else card_top + 60
+        usable_bottom = card_bottom - 60
+
+        if text_position == "lower_third":
+            y0 = usable_bottom - total_h - 60
+        elif text_position == "upper":
+            y0 = usable_top + 30
+        else:  # center
+            mid = (usable_top + usable_bottom) // 2
+            y0 = mid - total_h // 2
+
+        for i, line in enumerate(lines):
+            y = y0 + i * lh
+            x = (W - _tw(draw, line, font)) // 2
+            if use_outline:
+                for dx, dy in [(-2, -2), (2, -2), (-2, 2), (2, 2), (0, -2), (0, 2), (-2, 0), (2, 0)]:
+                    draw.text((x + dx, y + dy), line, font=font, fill=shadow_rgb)
+            else:
+                draw.text((x + 1, y + 1), line, font=font, fill=(*shadow_rgb, 140))
+            draw.text((x, y), line, font=font, fill=text_rgb)
+
+        p = out_dir / f"slide_{n:02d}.jpg"
+        img.save(str(p), "JPEG", quality=92)
+        paths.append(p)
+        print(f"    ✓ Slide {n}: {slide_text[:40]}")
+
+    return paths
+
+
 # ── Main dispatcher ───────────────────────────────────────────────────────
 
 def build_carousel(slides: dict, bg_bytes_input, config: dict, out_dir: Path) -> list:
@@ -826,5 +968,8 @@ def build_carousel(slides: dict, bg_bytes_input, config: dict, out_dir: Path) ->
         return build_carousel_alien(slides, bg_list, config, out_dir)
     elif pattern == "anime_meme":
         return build_carousel_anime(slides, bg_list, config, out_dir)
-    else:
+    elif pattern in ("gap", ""):
         return build_carousel_gap(slides, bg_list, config, out_dir)
+    else:
+        # Learned patterns — use generic builder
+        return build_carousel_generic(slides, bg_list, config, out_dir)

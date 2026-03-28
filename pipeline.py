@@ -354,6 +354,24 @@ _PATTERN_AUTO_PROMPTS = {
 _ALL_PATTERNS = list(_PATTERN_ENTRY_PROMPTS.keys())
 
 
+def _load_learned_patterns() -> dict:
+    """Load patterns from learned_patterns.json and merge into the prompt maps."""
+    path = BASE_DIR / "learned_patterns.json"
+    if not path.exists():
+        return {}
+    learned = json.load(open(path, encoding="utf-8"))
+    for slug, p in learned.items():
+        if slug not in _PATTERN_ENTRY_PROMPTS:
+            _PATTERN_ENTRY_PROMPTS[slug] = p["content_prompt"]
+            _PATTERN_AUTO_PROMPTS[slug] = p["auto_prompt"]
+            _ALL_PATTERNS.append(slug)
+    return learned
+
+
+# Load at import time so patterns are available immediately
+_LEARNED_PATTERNS = _load_learned_patterns()
+
+
 def _claude(system, prompt, client):
     response = client.messages.create(
         model="claude-opus-4-6",
@@ -383,10 +401,20 @@ def _pick_pattern(processed: dict) -> str:
     return random.choice(candidates)
 
 
+def _inject_learned_style(result: dict, pattern: str) -> dict:
+    """For learned patterns, inject _style and _display_name so the generic builder knows how to render."""
+    if pattern in _LEARNED_PATTERNS:
+        lp = _LEARNED_PATTERNS[pattern]
+        result["_style"] = lp.get("style", {})
+        result["_display_name"] = lp.get("display_name", pattern)
+    return result
+
+
 def generate_carousel_from_note(note, config, client, pattern: str):
     system = SYSTEM.format(**{k: config.get(k, "") for k in ("voice", "visual_style", "philosophy")})
     prompt = _PATTERN_ENTRY_PROMPTS[pattern].format(title=note["title"], content=note["content"])
-    return _claude(system, prompt, client)
+    result = _claude(system, prompt, client)
+    return _inject_learned_style(result, pattern)
 
 
 def auto_generate_carousel(notes, config, client, pattern: str):
@@ -397,8 +425,9 @@ def auto_generate_carousel(notes, config, client, pattern: str):
         context = "\n\n---\n\n".join(f"[{n['title']}]\n{n['content'][:400]}" for n in samples)
         prompt = _PATTERN_AUTO_PROMPTS[pattern].format(context=context)
     else:
-        prompt = EMPTY_VAULT_PROMPTS[pattern]
-    return _claude(system, prompt, client)
+        prompt = EMPTY_VAULT_PROMPTS.get(pattern, _PATTERN_AUTO_PROMPTS[pattern].replace("{context}", "Write from pure consciousness wisdom."))
+    result = _claude(system, prompt, client)
+    return _inject_learned_style(result, pattern)
 
 
 # ── Caption builder ────────────────────────────────────────────────────────
