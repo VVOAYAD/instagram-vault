@@ -4,6 +4,11 @@ on:
   schedule:
     - cron: '0 9 * * *'   # 9am UTC daily — change this to your preferred time
   workflow_dispatch:        # lets you trigger manually from GitHub's UI anytime
+    inputs:
+      force_pattern:
+        description: 'Force a specific pattern (gap, cosmic_duality, vibrational_anchor, alien_affirmation, anime_meme, scripture_card)'
+        required: false
+        default: ''
 
 permissions:
   contents: write           # needed to commit slides back to the repo
@@ -29,7 +34,12 @@ jobs:
       # Phase 1: Claude generates carousel content + Flux generates background
       # image + Pillow builds all 7 slides and saves them to output/
       - name: Phase 1 — generate carousel
-        run: python pipeline.py --phase1 --generate-if-empty
+        run: |
+          if [ -n "${{ github.event.inputs.force_pattern }}" ]; then
+            python pipeline.py --phase1 --generate-if-empty --force-pattern ${{ github.event.inputs.force_pattern }}
+          else
+            python pipeline.py --phase1 --generate-if-empty
+          fi
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           REPLICATE_API_TOKEN: ${{ secrets.REPLICATE_API_TOKEN }}
