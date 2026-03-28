@@ -58,20 +58,29 @@ def post_carousel(image_urls: list, caption: str, user_id: str, access_token: st
     Returns {"id": "instagram_post_id"}.
     """
 
-    # Step 1 — create a media container for each slide
+    # Step 1 — create a media container for each slide (with retry)
     container_ids = []
     for i, url in enumerate(image_urls, 1):
-        r = requests.post(
-            f"{GRAPH}/{user_id}/media",
-            data={
-                "image_url": url,
-                "is_carousel_item": "true",
-                "access_token": access_token,
-            },
-            timeout=30,
-        )
-        _check(r, f"creating container for slide {i}")
-        container_ids.append(r.json()["id"])
+        for attempt in range(4):
+            r = requests.post(
+                f"{GRAPH}/{user_id}/media",
+                data={
+                    "image_url": url,
+                    "is_carousel_item": "true",
+                    "access_token": access_token,
+                },
+                timeout=30,
+            )
+            try:
+                _check(r, f"creating container for slide {i}")
+                container_ids.append(r.json()["id"])
+                break
+            except RuntimeError as e:
+                if attempt < 3:
+                    print(f"    ⚠️  Slide {i} attempt {attempt + 1} failed, retrying in 8s...")
+                    time.sleep(8)
+                else:
+                    raise
 
     # Give Instagram a moment to process
     time.sleep(5)
