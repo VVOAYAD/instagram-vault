@@ -23,8 +23,17 @@ from pathlib import Path
 import anthropic
 
 BASE_DIR = Path(__file__).parent
-DOWNLOADS_DIR = BASE_DIR / "Downloads"
 CONFIG_PATH = BASE_DIR / "config.json"
+
+def _get_downloads_dir(config: dict) -> Path:
+    """Downloads can live in the Obsidian vault (configured in config.json)
+    or fall back to the instagram_system/Downloads folder."""
+    custom = config.get("downloads_dir", "")
+    if custom:
+        p = Path(custom).expanduser()
+        if p.exists():
+            return p
+    return BASE_DIR / "Downloads"
 OUTPUT_DIR = BASE_DIR / "output"
 PROCESSED_PATH = BASE_DIR / ".processed.json"
 PENDING_PATH = BASE_DIR / ".pending_plan.json"
@@ -51,11 +60,12 @@ def save_processed(data):
 
 # ── Notes reader ───────────────────────────────────────────────────────────
 
-def get_notes():
+def get_notes(config: dict):
     """Read all .md files from Downloads/ folder."""
-    DOWNLOADS_DIR.mkdir(exist_ok=True)
+    downloads_dir = _get_downloads_dir(config)
+    downloads_dir.mkdir(exist_ok=True)
     notes = []
-    for path in sorted(DOWNLOADS_DIR.glob("*.md")):
+    for path in sorted(downloads_dir.glob("*.md")):
         if path.name.startswith(".") or "example" in path.name.lower():
             continue
         title = path.stem
@@ -299,7 +309,7 @@ def build_caption(result):
 def phase1(generate_if_empty=False, dry_run=False):
     config = load_config()
     processed = load_processed()
-    notes = get_notes()
+    notes = get_notes(config)
     unprocessed = [n for n in notes if n["id"] not in processed]
 
     note = None
