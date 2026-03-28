@@ -137,5 +137,12 @@
     "generated_at": "2026-03-28T16:19:27.526250",
     "dry_run": false,
     "output": "output/20260328_1619_your_nervous_system_remembers_what_your"
+  },
+  "auto_20260328_1622": {
+    "title": "The Return",
+    "pattern": "scripture_card",
+    "generated_at": "2026-03-28T16:24:43.629734",
+    "dry_run": false,
+    "output": "output/20260328_1624_the_return"
   }
 }
