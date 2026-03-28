@@ -55,10 +55,29 @@ In progress. GitHub: https://github.com/VVOAYAD/oman-lifestyle-hub
 | `instagram_system/carousel_maker.py` | Builds the 7 slides |
 | `instagram_system/.github/workflows/daily_post.yml` | Schedule (cron: 9am UTC) |
 
-## Carousel patterns (rotate automatically)
+## Visual aesthetic (LOCKED — always apply this)
+User's aesthetic: illustrated/painted/collage, NOT photorealistic 3D renders.
+- Deep jewel tones: navy blue, deep purple, rich teal
+- Textures: brushstrokes, grain, film texture, glitter, gold foil
+- Alien Affirmation specifically: illustrated green alien, deep navy starfield, scattered glitter stars
+- All Flux prompts must include "illustrated art style, textured, NOT photorealistic"
+- Text on Alien Affirmation: ALL CAPS with wide letter tracking (spaces between chars)
+- "Simple and plain ain't me" — always layer, texture, and depth
+
+## Carousel patterns (rotate automatically — 6 total)
 1. The Gap — slow, expansive, deepens into the body
 2. The Cosmic Duality — single words across 4 slides → devastating sentence
 3. The Vibrational Anchor — direct, grounding, rhythmic
+4. The Alien Affirmation — full image, ALL CAPS tracked text, one affirmation per slide
+5. The Anime Meme — full image, centered subtitle-style caption per slide
+6. The Scripture Card — ornate border frame, sacred concept header, 7 reflections
+
+## Pattern references (auto-learning system)
+Folder: `instagram_system/pattern_references/`
+- Drop screenshots of posts you like into this folder
+- Run `python learn_pattern.py` to add them to the rotation
+- Learned patterns live in `learned_patterns.json`
+- At start of session: check if new images are in pattern_references/ that haven't been processed yet
 
 ## GitHub CLI
 Installed at: `/c/Program Files/GitHub CLI/gh`

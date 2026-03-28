@@ -665,22 +665,28 @@ def build_carousel_anchor(slides: dict, bg_list: list, config: dict, out_dir: Pa
 
 # ── Pattern 3: The Alien Affirmation ─────────────────────────────────────
 
+def _tracked_caps(text: str, spacing: int = 2) -> str:
+    """ALL CAPS with wide letter tracking — spaces inserted between each character."""
+    return (" " * spacing).join(_clean(text).upper())
+
+
 def slide_affirmation(n: int, text: str, bg_bytes: bytes, config: dict, total: int = 7) -> Image.Image:
-    """Full-bleed image, light veil, one affirmation in the lower third."""
+    """Full-bleed image, light veil, ALL CAPS tracked text in lower third.
+    Matches the reference aesthetic: illustrated alien, deep navy, glitter stars, spaced caps."""
     bg = _crop_bg(bg_bytes, variation=n % 5)
 
     # Very light veil — image is the hero
-    veil = Image.new("RGBA", (W, H), (0, 0, 0, 55))
+    veil = Image.new("RGBA", (W, H), (0, 0, 0, 50))
     bg = bg.convert("RGBA")
     bg.paste(veil, mask=veil)
 
     # Gradient at bottom so text is always readable
     grad = Image.new("RGBA", (W, H), (0, 0, 0, 0))
     gd = ImageDraw.Draw(grad)
-    start = int(H * 0.58)
+    start = int(H * 0.60)
     for y in range(start, H):
         t = (y - start) / (H - start)
-        a = int(min(1.0, t * 2.0) * 200)
+        a = int(min(1.0, t * 1.9) * 195)
         gd.line([(0, y), (W, y)], fill=(0, 0, 0, a))
     bg.paste(grad, mask=grad)
     bg = bg.convert("RGB")
@@ -691,27 +697,29 @@ def slide_affirmation(n: int, text: str, bg_bytes: bytes, config: dict, total: i
     if n < total:
         _swipe_arrow(draw, accent)
 
-    text = _clean(text)
-    nc = len(text)
-    if nc < 30:
-        fs, max_w = 56, W - 160
-    elif nc < 60:
-        fs, max_w = 46, W - 140
+    # Wrap at word level first (untracked), then apply tracking to each line
+    raw = _clean(text).upper()
+    nc = len(raw)
+    if nc < 25:
+        fs, max_w = 40, W - 200
+    elif nc < 50:
+        fs, max_w = 32, W - 180
     else:
-        fs, max_w = 36, W - 120
+        fs, max_w = 26, W - 160
 
     font = _font(fs, bold=False)
-    lines = _wrap(text, font, draw, max_w)
-    lh = int(fs * 1.50)
-    total_h = len(lines) * lh
+    word_lines = _wrap(raw, font, draw, max_w)
+    # Apply 2-space tracking to each wrapped line
+    tracked_lines = [_tracked_caps(line, spacing=2) for line in word_lines]
 
-    # Lower third — centered in the bottom 30% of the frame
-    y0 = int(H * 0.72) - total_h // 2
+    lh = int(fs * 1.70)
+    total_h = len(tracked_lines) * lh
+    y0 = int(H * 0.75) - total_h // 2
 
-    for i, line in enumerate(lines):
+    for i, line in enumerate(tracked_lines):
         y = y0 + i * lh
         x = (W - _tw(draw, line, font)) // 2
-        draw.text((x + 1, y + 1), line, font=font, fill=(0, 0, 0, 180))
+        draw.text((x + 1, y + 1), line, font=font, fill=(0, 0, 0, 160))
         draw.text((x, y), line, font=font, fill=(255, 255, 255))
 
     return bg

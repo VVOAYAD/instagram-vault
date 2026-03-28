@@ -110,7 +110,7 @@ Return ONLY valid JSON:
   "slide_7_cta": "Save this if it hit.",
   "caption": "Full caption — no hashtags. Hook + 3-4 lines + one reflection question.",
   "hashtags": ["10", "to", "15", "hashtags"],
-  "image_prompt": "Flux prompt — dark ethereal abstract void, slow luminous light dispersing through black space, ink dissolving in deep water, microscopic cellular forms barely lit, cinematic chiaroscuro, ultra-minimal, photorealistic, NO text, NO words, NO letters in image"
+  "image_prompt": "Flux prompt — dark ethereal abstract void, slow luminous light dissolving through deep space, ink bleeding through dark water, illustrated painterly texture, deep navy and violet tones, visible brushstroke grain, mixed-media aesthetic, NOT photorealistic, NO text NO words NO letters in image"
 }}"""
 
 COSMIC_ENTRY_PROMPT = """Transform this raw download into a 7-slide Instagram carousel using THE COSMIC DUALITY pattern.
@@ -133,7 +133,7 @@ Return ONLY valid JSON:
   "slide_7_cta": "Save this.",
   "caption": "Full caption — no hashtags. Starts with the revelation, expands.",
   "hashtags": ["10", "to", "15", "hashtags"],
-  "image_prompt": "Flux prompt — hyper-detailed 3D neo-classical marble statue, body cracked and split vertically down the center, blinding white-gold light pouring through the split, deep jet-black background, subtle chromatic aberration at crack edges, scattered white and pale pink flowers at the base, teal and violet spectral light halo, cinematic studio lighting, photorealistic render, ultra-sharp, NO text, NO words, NO letters in image"
+  "image_prompt": "Flux prompt — illustrated neo-classical marble sculpture cracked and split down the center, white-gold light pouring through the crack, scattered white and pink flowers at the base, deep black background, teal and violet ethereal glow at the edges, painterly illustrated texture, vintage fine art print aesthetic, rich jewel tones, NOT photorealistic, NO text NO words NO letters in image"
 }}"""
 
 ANCHOR_ENTRY_PROMPT = """Transform this raw download into a 7-slide Instagram carousel using THE VIBRATIONAL ANCHOR pattern.
@@ -156,7 +156,7 @@ Return ONLY valid JSON:
   "slide_7_cta": "Save this if it hit.",
   "caption": "Full caption — no hashtags. Warm, direct, encouraging.",
   "hashtags": ["10", "to", "15", "hashtags"],
-  "image_prompt": "Flux prompt — retro-surrealist dreamcore, lone glowing human silhouette standing in vast surreal landscape, warm amber-peach-violet gradient sky, soft film grain texture, muted neon glow, painterly atmosphere, golden hour light bleeding through clouds, slight lens distortion, cinematic widescreen feel, NO text, NO words, NO letters in image"
+  "image_prompt": "Flux prompt — retro-surrealist dreamcore illustration, lone glowing human silhouette in vast surreal painted landscape, warm amber-peach-violet hand-painted sky, analog film grain, muted neon glow, visible brushstroke texture, vintage illustrated poster aesthetic, rich jewel tones, NOT photorealistic, NO text NO words NO letters in image"
 }}"""
 
 ALIEN_ENTRY_PROMPT = """Transform this raw download into a 7-slide Instagram carousel using THE ALIEN AFFIRMATION pattern.
@@ -181,7 +181,7 @@ Return ONLY valid JSON:
   ],
   "caption": "Full caption — no hashtags. Warm, 3-4 lines max.",
   "hashtags": ["10", "to", "15", "hashtags"],
-  "image_prompt": "Flux prompt — 3D sculptural extraterrestrial figure, large smooth ovoid head, galaxy-black almond eyes, vivid single-color fashion editorial background, retro pop-art studio lighting, ultra-detailed sculptural render, NO text NO words NO letters in image"
+  "image_prompt": "Flux prompt — illustrated vintage collage alien portrait, textured hand-painted green alien head with large dark galaxy eyes and small pink lips, deep navy blue cosmic background scattered with gold foil and pink glitter star bursts, visible paint brushstrokes and canvas texture, mixed media collage aesthetic, whimsical and otherworldly, rich jewel tones, NOT photorealistic, illustration art style, NO text NO words NO letters in image"
 }}"""
 
 ANIME_ENTRY_PROMPT = """Transform this raw download into a 7-slide Instagram carousel using THE ANIME MEME pattern.
@@ -206,7 +206,7 @@ Return ONLY valid JSON:
   ],
   "caption": "Full caption — no hashtags. Playful but real. 3-4 lines.",
   "hashtags": ["10", "to", "15", "hashtags"],
-  "image_prompt": "Flux prompt — retro 90s anime aesthetic, dramatic expressive character, vibrant high-contrast scene, deep purple and electric blue palette, bold cell-shaded outlines, dynamic cinematic angle, chromatic aberration, analog film grain, NO text NO words NO letters in image"
+  "image_prompt": "Flux prompt — retro 90s anime illustration, dramatic expressive character, vibrant high-contrast colors, deep purple electric blue and teal palette, bold cel-shaded outlines, dynamic composition, visible halftone grain and scan lines, analog VHS texture, rich jewel tones, illustrated art style, NO text NO words NO letters in image"
 }}"""
 
 # Auto-generate versions (no note context)
@@ -301,7 +301,7 @@ Return ONLY valid JSON:
   ],
   "caption": "Full caption — no hashtags",
   "hashtags": ["10", "hashtags"],
-  "image_prompt": "3D sculptural extraterrestrial figure, large smooth ovoid head, galaxy eyes, vivid editorial background, retro pop-art lighting, NO text NO words in image"
+  "image_prompt": "Illustrated vintage collage alien portrait, textured green alien head, galaxy eyes, deep navy blue starfield, gold and pink glitter stars, mixed media collage aesthetic, NOT photorealistic, NO text NO words in image"
 }}"""
 
 ANIME_AUTO_PROMPT = """Study these existing downloads:
