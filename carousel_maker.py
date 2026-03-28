@@ -5,6 +5,9 @@ Three patterns:
   gap            — The Gap: dark bg, serif text, gold accents (original)
   cosmic_duality — The Cosmic Duality: single words on AI bg, neon glow
   vibrational_anchor — The Vibrational Anchor: gradient bg, bold white text
+
+All slides now use the AI-generated background (heavily dimmed) for visual
+consistency throughout the carousel, not just slide 1.
 """
 
 import io
@@ -78,6 +81,19 @@ def _rgba(hex_str: str, alpha: int) -> tuple:
 
 # ── Text helpers ──────────────────────────────────────────────────────────
 
+def _clean(text: str) -> str:
+    """Replace unicode characters Playfair Display doesn't render cleanly."""
+    return (text
+            .replace("\u2014", " - ")    # em dash — replace with ASCII dash
+            .replace("\u2013", " - ")    # en dash
+            .replace("\u2018", "'")      # left single quote
+            .replace("\u2019", "'")      # right single quote
+            .replace("\u201c", '"')      # left double quote
+            .replace("\u201d", '"')      # right double quote
+            .replace("\u2026", "...")    # ellipsis
+            )
+
+
 def _tw(draw: ImageDraw.Draw, text: str, font) -> int:
     bb = draw.textbbox((0, 0), text, font=font)
     return bb[2] - bb[0]
@@ -89,7 +105,7 @@ def _th(draw: ImageDraw.Draw, text: str, font) -> int:
 
 
 def _wrap(text: str, font, draw: ImageDraw.Draw, max_px: int) -> list:
-    words = text.split()
+    words = _clean(text).split()
     result, current = [], []
     for word in words:
         test = " ".join(current + [word])
@@ -104,6 +120,37 @@ def _wrap(text: str, font, draw: ImageDraw.Draw, max_px: int) -> list:
     return result or [""]
 
 
+# ── Background helpers ────────────────────────────────────────────────────
+
+def _crop_bg(bg_bytes: bytes, variation: int = 0) -> Image.Image:
+    """Load image bytes, crop to square, resize to 1080.
+    variation 0-4 gives slightly different crops for visual diversity."""
+    bg = Image.open(io.BytesIO(bg_bytes)).convert("RGB")
+    bw, bh = bg.size
+    s = min(bw, bh)
+    offsets = [(0, 0), (-30, -30), (30, -30), (-30, 30), (30, 30)]
+    ox, oy = offsets[variation % len(offsets)]
+    cx = (bw - s) // 2 + ox
+    cy = (bh - s) // 2 + oy
+    cx = max(0, min(cx, bw - s))
+    cy = max(0, min(cy, bh - s))
+    bg = bg.crop((cx, cy, cx + s, cy + s))
+    return bg.resize((W, H), Image.LANCZOS)
+
+
+def _dimmed_ai_bg(bg_bytes: bytes, overlay_alpha: int = 205, blur: float = 1.5,
+                  variation: int = 0) -> Image.Image:
+    """AI background heavily dimmed for body slides — keeps the cinematic feel
+    without fighting the text for attention."""
+    bg = _crop_bg(bg_bytes, variation=variation)
+    if blur > 0:
+        bg = bg.filter(ImageFilter.GaussianBlur(blur))
+    veil = Image.new("RGBA", (W, H), (0, 0, 0, overlay_alpha))
+    bg = bg.convert("RGBA")
+    bg.paste(veil, mask=veil)
+    return bg.convert("RGB")
+
+
 # ── Shared UI elements ────────────────────────────────────────────────────
 
 def _slide_number(draw: ImageDraw.Draw, n: int, total: int, accent: str):
@@ -114,8 +161,14 @@ def _slide_number(draw: ImageDraw.Draw, n: int, total: int, accent: str):
 
 
 def _swipe_arrow(draw: ImageDraw.Draw, accent: str):
-    font = _font(24, bold=True)
-    draw.text((W - 72, H - 68), ">>", font=font, fill=_rgba(accent, 140))
+    """Geometric chevron pair — no font dependency, always renders."""
+    color = _rgba(accent, 150)
+    x, y = W - 64, H - 56
+    size = 11
+    gap = 14
+    for dx in (0, gap):
+        ax = x + dx
+        draw.line([(ax, y - size), (ax + size, y), (ax, y + size)], fill=color, width=2)
 
 
 def _accent_line(img: Image.Image, cx: int, y: int, half_w: int, accent: str, alpha: int = 150):
@@ -123,23 +176,6 @@ def _accent_line(img: Image.Image, cx: int, y: int, half_w: int, accent: str, al
     d = ImageDraw.Draw(ov)
     d.line([(cx - half_w, y), (cx + half_w, y)], fill=_rgba(accent, alpha), width=1)
     img.paste(ov, mask=ov)
-
-
-def _crop_bg(bg_bytes: bytes, variation: int = 0) -> Image.Image:
-    """Load image bytes, crop to square, resize to 1080.
-    variation 0-4 gives slightly different crops for visual diversity."""
-    bg = Image.open(io.BytesIO(bg_bytes)).convert("RGB")
-    bw, bh = bg.size
-    s = min(bw, bh)
-    # Slight offset per variation so each slide feels different
-    offsets = [(0, 0), (-20, -20), (20, -20), (-20, 20), (20, 20)]
-    ox, oy = offsets[variation % len(offsets)]
-    cx = (bw - s) // 2 + ox
-    cy = (bh - s) // 2 + oy
-    cx = max(0, min(cx, bw - s))
-    cy = max(0, min(cy, bh - s))
-    bg = bg.crop((cx, cy, cx + s, cy + s))
-    return bg.resize((W, H), Image.LANCZOS)
 
 
 # ── Pattern 0: The Gap ────────────────────────────────────────────────────
@@ -188,12 +224,19 @@ def slide_hook(hook_text: str, bg_bytes: bytes, config: dict) -> Image.Image:
     return bg
 
 
-def slide_content(n: int, text: str, eyebrow: str, config: dict) -> Image.Image:
-    bg_color = _rgb(config.get("image_style", {}).get("background", "#0D0D0D"))
+def slide_content(n: int, text: str, eyebrow: str, config: dict, bg_bytes: bytes = None) -> Image.Image:
     text_color = config.get("image_style", {}).get("text_color", "#F0EBE0")
     accent = config.get("image_style", {}).get("accent_color", "#9B7D52")
 
-    img = Image.new("RGB", (W, H), bg_color)
+    # Use AI background (heavily dimmed) when available — keeps the carousel
+    # cinematic rather than cutting to flat black after slide 1
+    if bg_bytes:
+        variation = n % 5
+        img = _dimmed_ai_bg(bg_bytes, overlay_alpha=200, blur=2.0, variation=variation)
+    else:
+        bg_color = _rgb(config.get("image_style", {}).get("background", "#0D0D0D"))
+        img = Image.new("RGB", (W, H), bg_color)
+
     draw = ImageDraw.Draw(img)
 
     _slide_number(draw, n, 7, accent)
@@ -225,7 +268,7 @@ def slide_content(n: int, text: str, eyebrow: str, config: dict) -> Image.Image:
     _accent_line(img, W // 2, y0 - 30, 52, accent)
 
     if eyebrow.strip():
-        label = eyebrow.strip().upper()
+        label = _clean(eyebrow).strip().upper()
         ew = _tw(draw, label, eb_font)
         draw.text(((W - ew) // 2, y0), label, font=eb_font, fill=_rgba(accent, 190))
 
@@ -233,6 +276,8 @@ def slide_content(n: int, text: str, eyebrow: str, config: dict) -> Image.Image:
     for i, line in enumerate(lines):
         y = ty + i * lh
         x = (W - _tw(draw, line, font)) // 2
+        # Soft shadow for readability on AI bg
+        draw.text((x + 1, y + 1), line, font=font, fill=(0, 0, 0, 120))
         draw.text((x, y), line, font=font, fill=_rgb(text_color))
 
     _accent_line(img, W // 2, ty + text_h + 24, 52, accent)
@@ -240,13 +285,17 @@ def slide_content(n: int, text: str, eyebrow: str, config: dict) -> Image.Image:
     return img
 
 
-def slide_cta(cta_text: str, config: dict) -> Image.Image:
-    bg_color = _rgb(config.get("image_style", {}).get("background", "#0D0D0D"))
+def slide_cta(cta_text: str, config: dict, bg_bytes: bytes = None) -> Image.Image:
     text_color = config.get("image_style", {}).get("text_color", "#F0EBE0")
     accent = config.get("image_style", {}).get("accent_color", "#9B7D52")
     handle = config.get("instagram_handle", "")
 
-    img = Image.new("RGB", (W, H), bg_color)
+    if bg_bytes:
+        img = _dimmed_ai_bg(bg_bytes, overlay_alpha=215, blur=3.0, variation=0)
+    else:
+        bg_color = _rgb(config.get("image_style", {}).get("background", "#0D0D0D"))
+        img = Image.new("RGB", (W, H), bg_color)
+
     draw = ImageDraw.Draw(img)
     _slide_number(draw, 7, 7, accent)
 
@@ -266,6 +315,7 @@ def slide_cta(cta_text: str, config: dict) -> Image.Image:
     for i, line in enumerate(lines):
         y = y0 + i * lh
         x = (W - _tw(draw, line, cta_font)) // 2
+        draw.text((x + 1, y + 1), line, font=cta_font, fill=(0, 0, 0, 100))
         draw.text((x, y), line, font=cta_font, fill=_rgb(text_color))
 
     _accent_line(img, W // 2, y0 + cta_h + divider_gap // 2, 40, accent, alpha=110)
@@ -291,13 +341,13 @@ def build_carousel_gap(slides: dict, bg_bytes: bytes, config: dict, out_dir: Pat
 
     for n in range(2, 7):
         data = slides.get(f"slide_{n}", {})
-        img = slide_content(n, data.get("text", ""), data.get("eyebrow", ""), config)
+        img = slide_content(n, data.get("text", ""), data.get("eyebrow", ""), config, bg_bytes)
         p = out_dir / f"slide_{n:02d}.jpg"
         img.save(str(p), "JPEG", quality=92)
         paths.append(p)
         print(f"    ✓ Slide {n}")
 
-    img = slide_cta(slides["slide_7_cta"], config)
+    img = slide_cta(slides["slide_7_cta"], config, bg_bytes)
     p = out_dir / "slide_07.jpg"
     img.save(str(p), "JPEG", quality=92)
     paths.append(p)
@@ -328,21 +378,19 @@ def slide_cosmic_word(n: int, word: str, bg_bytes: bytes, config: dict) -> Image
     _slide_number(draw, n, 7, accent_hex)
     _swipe_arrow(draw, accent_hex)
 
-    # Scale font to fit
+    word = _clean(word)
     fs = 200
     font = _font(fs, italic=True)
     while _tw(draw, word, font) > W - 80 and fs > 60:
         fs -= 10
         font = _font(fs, italic=True)
 
-    # Use bounding box for precise centering
     bb = draw.textbbox((0, 0), word, font=font)
     word_w = bb[2] - bb[0]
     word_h = bb[3] - bb[1]
     x = (W - word_w) // 2 - bb[0]
     y = (H - word_h) // 2 - bb[1]
 
-    # Neon glow behind text
     glow_ov = Image.new("RGBA", (W, H), (0, 0, 0, 0))
     gd = ImageDraw.Draw(glow_ov)
     pad = 60
@@ -363,12 +411,7 @@ def slide_cosmic_word(n: int, word: str, bg_bytes: bytes, config: dict) -> Image
 
 def slide_cosmic_reveal(n: int, text: str, bg_bytes: bytes, config: dict) -> Image.Image:
     """Full revelation sentence on AI background."""
-    bg = _crop_bg(bg_bytes)
-
-    veil = Image.new("RGBA", (W, H), (0, 0, 0, 140))
-    bg = bg.convert("RGBA")
-    bg.paste(veil, mask=veil)
-    bg = bg.convert("RGB")
+    bg = _dimmed_ai_bg(bg_bytes, overlay_alpha=155, blur=1.0, variation=n)
 
     accent_hex = "#C4A97D"
     draw = ImageDraw.Draw(bg)
@@ -421,13 +464,13 @@ def build_carousel_cosmic(slides: dict, bg_bytes: bytes, config: dict, out_dir: 
     print("    ✓ Slide 5 (revelation)")
 
     data = slides.get("slide_6", {})
-    img = slide_content(6, data.get("text", ""), data.get("eyebrow", ""), config)
+    img = slide_content(6, data.get("text", ""), data.get("eyebrow", ""), config, bg_bytes)
     p = out_dir / "slide_06.jpg"
     img.save(str(p), "JPEG", quality=92)
     paths.append(p)
     print("    ✓ Slide 6")
 
-    img = slide_cta(slides["slide_7_cta"], config)
+    img = slide_cta(slides["slide_7_cta"], config, bg_bytes)
     p = out_dir / "slide_07.jpg"
     img.save(str(p), "JPEG", quality=92)
     paths.append(p)
@@ -438,35 +481,33 @@ def build_carousel_cosmic(slides: dict, bg_bytes: bytes, config: dict, out_dir: 
 
 # ── Pattern 2: The Vibrational Anchor ────────────────────────────────────
 
-_ANCHOR_GRADIENTS = [
-    ("#0D0D2B", "#1A0A3D"),
-    ("#0A1628", "#0D2B3D"),
-    ("#1A0A1A", "#2D1B4E"),
-    ("#0A1A10", "#0D2B1A"),
-    ("#1A1200", "#2B2000"),
-]
 _ANCHOR_ACCENTS = ["#F59E0B", "#EC4899", "#10B981", "#60A5FA", "#A78BFA"]
 
 
-def _gradient_bg(color1_hex: str, color2_hex: str) -> Image.Image:
-    c1, c2 = _rgb(color1_hex), _rgb(color2_hex)
-    img = Image.new("RGB", (W, H))
-    draw = ImageDraw.Draw(img)
-    for y in range(H):
-        t = y / H
-        r = int(c1[0] * (1 - t) + c2[0] * t)
-        g = int(c1[1] * (1 - t) + c2[1] * t)
-        b = int(c1[2] * (1 - t) + c2[2] * t)
-        draw.line([(0, y), (W, y)], fill=(r, g, b))
-    return img
-
-
-def slide_anchor(n: int, text: str, config: dict) -> Image.Image:
-    """Gradient background, bold white text, vibrant accent."""
-    grad = _ANCHOR_GRADIENTS[(n - 1) % len(_ANCHOR_GRADIENTS)]
+def slide_anchor(n: int, text: str, config: dict, bg_bytes: bytes = None) -> Image.Image:
+    """Bold white text on AI background (or deep gradient fallback)."""
     accent_hex = _ANCHOR_ACCENTS[(n - 1) % len(_ANCHOR_ACCENTS)]
 
-    img = _gradient_bg(grad[0], grad[1])
+    if bg_bytes:
+        variation = (n + 2) % 5
+        img = _dimmed_ai_bg(bg_bytes, overlay_alpha=195, blur=2.5, variation=variation)
+    else:
+        # Fallback gradient if no AI bg
+        _ANCHOR_GRADIENTS = [
+            ("#0D0D2B", "#1A0A3D"), ("#0A1628", "#0D2B3D"),
+            ("#1A0A1A", "#2D1B4E"), ("#0A1A10", "#0D2B1A"), ("#1A1200", "#2B2000"),
+        ]
+        grad = _ANCHOR_GRADIENTS[(n - 1) % len(_ANCHOR_GRADIENTS)]
+        c1, c2 = _rgb(grad[0]), _rgb(grad[1])
+        img = Image.new("RGB", (W, H))
+        d = ImageDraw.Draw(img)
+        for row in range(H):
+            t = row / H
+            r = int(c1[0] * (1 - t) + c2[0] * t)
+            g = int(c1[1] * (1 - t) + c2[1] * t)
+            b = int(c1[2] * (1 - t) + c2[2] * t)
+            d.line([(0, row), (W, row)], fill=(r, g, b))
+
     draw = ImageDraw.Draw(img)
 
     _slide_number(draw, n, 7, accent_hex)
@@ -485,7 +526,6 @@ def slide_anchor(n: int, text: str, config: dict) -> Image.Image:
 
     font = _font(fs, bold=True)
     lines = _wrap(text, font, draw, max_w)
-    # Measure actual line height from font
     sample_bb = draw.textbbox((0, 0), "Ag", font=font)
     lh = int((sample_bb[3] - sample_bb[1]) * 1.5)
     total_h = len(lines) * lh
@@ -496,6 +536,8 @@ def slide_anchor(n: int, text: str, config: dict) -> Image.Image:
     for i, line in enumerate(lines):
         y = y0 + i * lh
         x = (W - _tw(draw, line, font)) // 2
+        # Shadow for readability on AI bg
+        draw.text((x + 2, y + 2), line, font=font, fill=(0, 0, 0, 140))
         draw.text((x, y), line, font=font, fill=(255, 255, 255))
 
     _accent_line(img, W // 2, y0 + total_h + 34, 64, accent_hex, alpha=200)
@@ -507,7 +549,6 @@ def slide_anchor_hook(hook_text: str, bg_bytes: bytes, config: dict) -> Image.Im
     """Pattern 2 Slide 1: AI background with bold hook text."""
     bg = _crop_bg(bg_bytes)
 
-    # Warm gradient overlay instead of pure black
     grad = Image.new("RGBA", (W, H), (0, 0, 0, 0))
     gd = ImageDraw.Draw(grad)
     start = int(H * 0.25)
@@ -543,13 +584,24 @@ def slide_anchor_hook(hook_text: str, bg_bytes: bytes, config: dict) -> Image.Im
     return bg
 
 
-def slide_anchor_cta(cta_text: str, config: dict) -> Image.Image:
-    """Pattern 2 CTA slide with gradient background."""
-    grad = _ANCHOR_GRADIENTS[0]
+def slide_anchor_cta(cta_text: str, config: dict, bg_bytes: bytes = None) -> Image.Image:
+    """Pattern 2 CTA slide."""
     accent_hex = _ANCHOR_ACCENTS[1]
     handle = config.get("instagram_handle", "")
 
-    img = _gradient_bg(grad[0], grad[1])
+    if bg_bytes:
+        img = _dimmed_ai_bg(bg_bytes, overlay_alpha=210, blur=3.0, variation=1)
+    else:
+        c1, c2 = _rgb("#0D0D2B"), _rgb("#1A0A3D")
+        img = Image.new("RGB", (W, H))
+        d = ImageDraw.Draw(img)
+        for row in range(H):
+            t = row / H
+            r = int(c1[0] * (1 - t) + c2[0] * t)
+            g = int(c1[1] * (1 - t) + c2[1] * t)
+            b = int(c1[2] * (1 - t) + c2[2] * t)
+            d.line([(0, row), (W, row)], fill=(r, g, b))
+
     draw = ImageDraw.Draw(img)
     _slide_number(draw, 7, 7, accent_hex)
 
@@ -569,6 +621,7 @@ def slide_anchor_cta(cta_text: str, config: dict) -> Image.Image:
     for i, line in enumerate(lines):
         y = y0 + i * lh
         x = (W - _tw(draw, line, cta_font)) // 2
+        draw.text((x + 2, y + 2), line, font=cta_font, fill=(0, 0, 0, 120))
         draw.text((x, y), line, font=cta_font, fill=(255, 255, 255))
 
     _accent_line(img, W // 2, y0 + cta_h + divider_gap // 2, 44, accent_hex, alpha=140)
@@ -594,13 +647,13 @@ def build_carousel_anchor(slides: dict, bg_bytes: bytes, config: dict, out_dir: 
 
     for n in range(2, 7):
         text = slides.get(f"slide_{n}", "")
-        img = slide_anchor(n, text, config)
+        img = slide_anchor(n, text, config, bg_bytes)
         p = out_dir / f"slide_{n:02d}.jpg"
         img.save(str(p), "JPEG", quality=92)
         paths.append(p)
         print(f"    ✓ Slide {n}")
 
-    img = slide_anchor_cta(slides["slide_7_cta"], config)
+    img = slide_anchor_cta(slides["slide_7_cta"], config, bg_bytes)
     p = out_dir / "slide_07.jpg"
     img.save(str(p), "JPEG", quality=92)
     paths.append(p)
