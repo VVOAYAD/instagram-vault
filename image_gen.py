@@ -76,7 +76,7 @@ def _replicate(prompt: str, token: str, config: dict) -> str:
             "aspect_ratio": "1:1",
             "output_format": "jpg",
             "output_quality": 95,
-            "safety_tolerance": 2,
+            "safety_tolerance": 5,
             "prompt_upsampling": True,
         },
     )

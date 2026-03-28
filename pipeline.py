@@ -181,7 +181,7 @@ Return ONLY valid JSON:
   ],
   "caption": "Full caption — no hashtags. Warm, 3-4 lines max.",
   "hashtags": ["10", "to", "15", "hashtags"],
-  "image_prompt": "Flux prompt — 3D sculptural cosmic alien being, large smooth alien-shaped head, galaxy black almond eyes reflecting stars, full glossy lips, vivid solid-color fashion editorial background, glossy plastic skin texture, retro pop-art studio lighting, ultra-detailed, NO text NO words NO letters in image"
+  "image_prompt": "Flux prompt — 3D sculptural extraterrestrial figure, large smooth ovoid head, galaxy-black almond eyes, vivid single-color fashion editorial background, retro pop-art studio lighting, ultra-detailed sculptural render, NO text NO words NO letters in image"
 }}"""
 
 ANIME_ENTRY_PROMPT = """Transform this raw download into a 7-slide Instagram carousel using THE ANIME MEME pattern.
@@ -301,7 +301,7 @@ Return ONLY valid JSON:
   ],
   "caption": "Full caption — no hashtags",
   "hashtags": ["10", "hashtags"],
-  "image_prompt": "3D cosmic alien being, pop-art editorial, vivid backgrounds, NO text NO words in image"
+  "image_prompt": "3D sculptural extraterrestrial figure, large smooth ovoid head, galaxy eyes, vivid editorial background, retro pop-art lighting, NO text NO words in image"
 }}"""
 
 ANIME_AUTO_PROMPT = """Study these existing downloads:
