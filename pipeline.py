@@ -206,7 +206,7 @@ Return ONLY valid JSON:
   ],
   "caption": "Full caption — no hashtags. Playful but real. 3-4 lines.",
   "hashtags": ["10", "to", "15", "hashtags"],
-  "image_prompt": "Flux prompt — retro 90s anime illustration, dramatic expressive character, vibrant high-contrast colors, deep purple electric blue and teal palette, bold cel-shaded outlines, dynamic composition, visible halftone grain and scan lines, analog VHS texture, rich jewel tones, illustrated art style, NO text NO words NO letters in image"
+  "image_prompt": "Flux prompt — retro 90s anime illustration, close-up of expressive animated face showing emotion, vibrant high-contrast colors, deep purple electric blue and teal palette, bold cel-shaded outlines, visible halftone grain and scan lines, analog VHS texture, rich jewel tones, fully clothed character, illustrated art style, safe for all audiences, NO text NO words NO letters in image"
 }}"""
 
 # Auto-generate versions (no note context)
