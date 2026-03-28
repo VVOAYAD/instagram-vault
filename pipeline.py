@@ -133,7 +133,7 @@ Return ONLY valid JSON:
   "slide_7_cta": "Save this.",
   "caption": "Full caption — no hashtags. Starts with the revelation, expands.",
   "hashtags": ["10", "to", "15", "hashtags"],
-  "image_prompt": "Flux prompt — illustrated neo-classical marble sculpture cracked and split down the center, white-gold light pouring through the crack, scattered white and pink flowers at the base, deep black background, teal and violet ethereal glow at the edges, painterly illustrated texture, vintage fine art print aesthetic, rich jewel tones, NOT photorealistic, NO text NO words NO letters in image"
+  "image_prompt": "Flux prompt — neo-classical marble male statue fragmenting and glitching apart into horizontal shards of light, golden neon and iridescent light emanating from within the glitch breaks, two ancient Greek Corinthian columns flanking the scene left and right, dark reflective ocean water below with pink and magenta light reflection on the surface, deep black background, chromatic aberration rainbow edges on every glitch shard, purple and magenta atmospheric glow, vaporwave digital glitch art, ultra-cinematic dramatic lighting, NO text NO words NO letters in image"
 }}"""
 
 ANCHOR_ENTRY_PROMPT = """Transform this raw download into a 7-slide Instagram carousel using THE VIBRATIONAL ANCHOR pattern.
@@ -253,7 +253,7 @@ Return ONLY valid JSON:
   "slide_7_cta": "Save this.",
   "caption": "Full caption — no hashtags",
   "hashtags": ["10", "hashtags"],
-  "image_prompt": "Hyper-detailed 3D neo-classical marble statue split down the center, light pouring through, flowers at base, deep black background, NO text, NO words in image"
+  "image_prompt": "Neo-classical marble statue glitching into horizontal neon shards, golden light from within, Greek columns flanking, dark ocean below with pink reflection, chromatic aberration, vaporwave, NO text NO words in image"
 }}"""
 
 ANCHOR_AUTO_PROMPT = """Study these existing downloads:

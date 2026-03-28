@@ -55,14 +55,15 @@ In progress. GitHub: https://github.com/VVOAYAD/oman-lifestyle-hub
 | `instagram_system/carousel_maker.py` | Builds the 7 slides |
 | `instagram_system/.github/workflows/daily_post.yml` | Schedule (cron: 9am UTC) |
 
-## Visual aesthetic (LOCKED — always apply this)
-User's aesthetic: illustrated/painted/collage, NOT photorealistic 3D renders.
-- Deep jewel tones: navy blue, deep purple, rich teal
-- Textures: brushstrokes, grain, film texture, glitter, gold foil
-- Alien Affirmation specifically: illustrated green alien, deep navy starfield, scattered glitter stars
-- All Flux prompts must include "illustrated art style, textured, NOT photorealistic"
-- Text on Alien Affirmation: ALL CAPS with wide letter tracking (spaces between chars)
-- "Simple and plain ain't me" — always layer, texture, and depth
+## Visual aesthetic (LOCKED per pattern — "simple and plain ain't me")
+
+**Alien Affirmation:** illustrated/collage green alien, deep navy starfield, pink+gold glitter stars, NOT photorealistic, painted texture
+**Cosmic Duality:** glitching neo-classical marble statue + Greek columns + dark ocean + pink/magenta reflection + chromatic aberration neon shards — vaporwave meets ancient Greece
+**Vibrational Anchor:** retro-surrealist dreamcore illustration, lone silhouette, amber-violet painted sky, film grain
+**Gap:** dark void, painterly luminous light dissolving through space
+**Anime Meme:** retro 90s anime illustration, jewel tones, cel-shaded, VHS grain
+
+Text on Alien Affirmation slides: ALL CAPS with wide letter tracking (spaces between each char)
 
 ## Carousel patterns (rotate automatically — 6 total)
 1. The Gap — slow, expansive, deepens into the body
