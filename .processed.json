@@ -102,5 +102,12 @@
     "generated_at": "2026-03-28T14:14:26.406202",
     "dry_run": true,
     "output": "output/20260328_1414_the_personality_you_never_chose"
+  },
+  "auto_20260328_1550": {
+    "title": "The Gap Is Not Distance \u2014 It Is Death",
+    "pattern": "gap",
+    "generated_at": "2026-03-28T15:52:34.127461",
+    "dry_run": false,
+    "output": "output/20260328_1552_the_gap_is_not_distance___it_is_death"
   }
 }
