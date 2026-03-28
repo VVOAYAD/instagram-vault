@@ -78,68 +78,163 @@ PHILOSOPHY: {philosophy}
 
 Rule: Never explain. Transmit. Each carousel carries the full feeling on its own."""
 
-ENTRY_PROMPT = """Transform this raw download into a 7-slide Instagram carousel.
+# ── Pattern prompts ────────────────────────────────────────────────────────
+
+GAP_ENTRY_PROMPT = """Transform this raw download into a 7-slide Instagram carousel using THE GAP pattern.
+
+THE GAP: You open a gap between what the mind knows and what the body hasn't caught up to yet. Slow, expansive, each slide one thought deeper.
 
 TITLE: {title}
 CONTENT:
 {content}
 
-Return ONLY valid JSON with this exact structure:
+Return ONLY valid JSON:
 {{
-  "slide_1_hook": "Hook that stops the scroll — max 10 words, no punctuation at the end",
-  "slide_2": {{"eyebrow": "optional short label (2-4 words, or empty string)", "text": "First insight — 1-3 potent sentences"}},
-  "slide_3": {{"eyebrow": "", "text": "Second insight — continue the thread"}},
-  "slide_4": {{"eyebrow": "", "text": "Third insight — deepen it"}},
-  "slide_5": {{"eyebrow": "", "text": "Fourth insight — the turn"}},
-  "slide_6": {{"eyebrow": "The Shift", "text": "The synthesis — what changes when you fully feel this"}},
-  "slide_7_cta": "Save this if it hit. (or a 6-8 word variation that fits the post)",
-  "caption": "Full Instagram caption — starts with the hook, 3-4 lines of depth, ends with one reflection question. No hashtags here.",
-  "hashtags": ["10", "to", "15", "relevant", "hashtags", "no", "hash", "symbol"],
-  "image_prompt": "Detailed Flux/Stable Diffusion prompt for the slide 1 background — dark, ethereal, abstract, consciousness-themed, NO text in image, cinematic quality"
+  "pattern": "gap",
+  "slide_1_hook": "The hook — opens the gap. Max 10 words.",
+  "slide_2": {{"eyebrow": "optional label", "text": "First layer — 1-3 sentences"}},
+  "slide_3": {{"eyebrow": "", "text": "Deepen it"}},
+  "slide_4": {{"eyebrow": "", "text": "The tension — where the gap lives"}},
+  "slide_5": {{"eyebrow": "", "text": "The turn"}},
+  "slide_6": {{"eyebrow": "The Shift", "text": "What closes the gap — the felt realization"}},
+  "slide_7_cta": "Save this if it hit.",
+  "caption": "Full caption — no hashtags. Hook + 3-4 lines + one reflection question.",
+  "hashtags": ["10", "to", "15", "hashtags"],
+  "image_prompt": "Flux prompt — dark, ethereal, abstract, consciousness-themed, NO text in image, cinematic"
 }}"""
 
-AUTO_PROMPT = """Study these existing downloads from my vault:
+COSMIC_ENTRY_PROMPT = """Transform this raw download into a 7-slide Instagram carousel using THE COSMIC DUALITY pattern.
+
+THE COSMIC DUALITY: Single words build a sentence across slides 1-4. Slide 5 is the full revelation. Mystical, authoritative, suspended breath.
+
+TITLE: {title}
+CONTENT:
+{content}
+
+Return ONLY valid JSON:
+{{
+  "pattern": "cosmic_duality",
+  "slide_1_word": "First word — evocative, mystical (e.g. Remember / Feel / You / Before)",
+  "slide_2_word": "Second word — continues the build",
+  "slide_3_word": "Third word — tightens",
+  "slide_4_word": "Fourth word or short phrase ending with a period",
+  "slide_5_revelation": "The complete sentence that slides 1-4 were building toward — short, final, devastating",
+  "slide_6": {{"eyebrow": "", "text": "Optional 1-2 sentences of depth, or leave short"}},
+  "slide_7_cta": "Save this.",
+  "caption": "Full caption — no hashtags. Starts with the revelation, expands.",
+  "hashtags": ["10", "to", "15", "hashtags"],
+  "image_prompt": "Flux prompt — 3D neo-classical sculpture, glitch or split effects, cinematic chiaroscuro, dark background with ethereal purple and teal light, NO text"
+}}"""
+
+ANCHOR_ENTRY_PROMPT = """Transform this raw download into a 7-slide Instagram carousel using THE VIBRATIONAL ANCHOR pattern.
+
+THE VIBRATIONAL ANCHOR: Direct, grounding, rhythmic. Short punchy sentences. "I" and "you" statements. Each slide is a breath, a reset, a permission slip.
+
+TITLE: {title}
+CONTENT:
+{content}
+
+Return ONLY valid JSON:
+{{
+  "pattern": "vibrational_anchor",
+  "slide_1_hook": "Hook — a goal, intention, or state of being. One sentence.",
+  "slide_2": "A grounding statement or reframe — 1-2 sentences",
+  "slide_3": "A permission slip — what they're allowed to feel or do",
+  "slide_4": "The shift — what changes when they accept this",
+  "slide_5": "An anchor — a simple truth to return to",
+  "slide_6": "Final affirmation — the state to embody. Short and complete.",
+  "slide_7_cta": "Save this if it hit.",
+  "caption": "Full caption — no hashtags. Warm, direct, encouraging.",
+  "hashtags": ["10", "to", "15", "hashtags"],
+  "image_prompt": "Flux prompt — retro-surrealism, dreamcore, warm gradients, glowing silhouette, film grain aesthetic, NO text in image"
+}}"""
+
+# Auto-generate versions (no note context)
+GAP_AUTO_PROMPT = """Study these existing downloads:
 
 {context}
 
-Generate ONE original new insight that expands this field in a completely fresh direction.
-Same frequency, different expression. Should feel like a genuine new download.
+Generate ONE original new insight using THE GAP pattern. Same frequency, fresh expression.
 
-Return ONLY valid JSON with this exact structure:
+Return ONLY valid JSON:
 {{
-  "_title": "Name of this insight",
-  "_raw_content": "The full download — 3-6 sentences, raw and potent",
-  "slide_1_hook": "Hook — max 10 words",
-  "slide_2": {{"eyebrow": "", "text": "First insight"}},
-  "slide_3": {{"eyebrow": "", "text": "Second insight"}},
-  "slide_4": {{"eyebrow": "", "text": "Third insight"}},
-  "slide_5": {{"eyebrow": "", "text": "Fourth insight"}},
-  "slide_6": {{"eyebrow": "The Shift", "text": "Synthesis"}},
-  "slide_7_cta": "Save this if it hit.",
-  "caption": "Full Instagram caption — no hashtags",
-  "hashtags": ["10", "relevant", "hashtags"],
-  "image_prompt": "Detailed background image prompt — dark, ethereal, abstract, NO text"
-}}"""
-
-EMPTY_VAULT_PROMPT = """Generate ONE original Instagram carousel about consciousness, nervous system regulation, or human transformation.
-
-Write as someone who has lived this — not studied it. Raw, potent, felt.
-
-Return ONLY valid JSON with this exact structure:
-{{
+  "pattern": "gap",
   "_title": "Name of this insight",
   "_raw_content": "The full download — 3-6 sentences",
   "slide_1_hook": "Hook — max 10 words",
-  "slide_2": {{"eyebrow": "", "text": "First insight"}},
-  "slide_3": {{"eyebrow": "", "text": "Second insight"}},
-  "slide_4": {{"eyebrow": "", "text": "Third insight"}},
-  "slide_5": {{"eyebrow": "", "text": "Fourth insight"}},
-  "slide_6": {{"eyebrow": "The Shift", "text": "Synthesis"}},
+  "slide_2": {{"eyebrow": "", "text": "First layer"}},
+  "slide_3": {{"eyebrow": "", "text": "Deepen"}},
+  "slide_4": {{"eyebrow": "", "text": "Tension"}},
+  "slide_5": {{"eyebrow": "", "text": "Turn"}},
+  "slide_6": {{"eyebrow": "The Shift", "text": "Felt realization"}},
   "slide_7_cta": "Save this if it hit.",
-  "caption": "Full Instagram caption — no hashtags",
-  "hashtags": ["10", "relevant", "hashtags"],
-  "image_prompt": "Detailed background image prompt — dark, ethereal, abstract, NO text"
+  "caption": "Full caption — no hashtags",
+  "hashtags": ["10", "hashtags"],
+  "image_prompt": "Dark ethereal abstract background — NO text"
 }}"""
+
+COSMIC_AUTO_PROMPT = """Study these existing downloads:
+
+{context}
+
+Generate ONE original new insight using THE COSMIC DUALITY pattern. Single words building to revelation.
+
+Return ONLY valid JSON:
+{{
+  "pattern": "cosmic_duality",
+  "_title": "Name of this insight",
+  "_raw_content": "The full download — 3-6 sentences",
+  "slide_1_word": "First word",
+  "slide_2_word": "Second word",
+  "slide_3_word": "Third word",
+  "slide_4_word": "Fourth word.",
+  "slide_5_revelation": "The full revelation sentence",
+  "slide_6": {{"eyebrow": "", "text": "Brief depth"}},
+  "slide_7_cta": "Save this.",
+  "caption": "Full caption — no hashtags",
+  "hashtags": ["10", "hashtags"],
+  "image_prompt": "3D neo-classical sculpture, dark ethereal, neon accents — NO text"
+}}"""
+
+ANCHOR_AUTO_PROMPT = """Study these existing downloads:
+
+{context}
+
+Generate ONE original new insight using THE VIBRATIONAL ANCHOR pattern. Grounding, rhythmic, direct.
+
+Return ONLY valid JSON:
+{{
+  "pattern": "vibrational_anchor",
+  "_title": "Name of this insight",
+  "_raw_content": "The full download — 3-6 sentences",
+  "slide_1_hook": "Hook — one sentence",
+  "slide_2": "Grounding statement",
+  "slide_3": "Permission slip",
+  "slide_4": "The shift",
+  "slide_5": "Anchor",
+  "slide_6": "Final affirmation",
+  "slide_7_cta": "Save this if it hit.",
+  "caption": "Full caption — no hashtags",
+  "hashtags": ["10", "hashtags"],
+  "image_prompt": "Retro-surrealist dreamcore, warm gradients, glowing silhouette — NO text"
+}}"""
+
+EMPTY_VAULT_PROMPTS = {
+    "gap": GAP_AUTO_PROMPT.replace("{context}", "Write from pure consciousness wisdom — no context needed."),
+    "cosmic_duality": COSMIC_AUTO_PROMPT.replace("{context}", "Write from pure consciousness wisdom — no context needed."),
+    "vibrational_anchor": ANCHOR_AUTO_PROMPT.replace("{context}", "Write from pure consciousness wisdom — no context needed."),
+}
+
+_PATTERN_ENTRY_PROMPTS = {
+    "gap": GAP_ENTRY_PROMPT,
+    "cosmic_duality": COSMIC_ENTRY_PROMPT,
+    "vibrational_anchor": ANCHOR_ENTRY_PROMPT,
+}
+_PATTERN_AUTO_PROMPTS = {
+    "gap": GAP_AUTO_PROMPT,
+    "cosmic_duality": COSMIC_AUTO_PROMPT,
+    "vibrational_anchor": ANCHOR_AUTO_PROMPT,
+}
 
 
 def _claude(system, prompt, client):
@@ -161,21 +256,31 @@ def _claude(system, prompt, client):
         raise ValueError(f"No valid JSON in Claude response:\n{text[:400]}")
 
 
-def generate_carousel_from_note(note, config, client):
+def _pick_pattern(processed: dict) -> str:
+    """Rotate through patterns so each appears roughly equally."""
+    import random
+    recent = [v.get("pattern") for v in list(processed.values())[-6:] if v.get("pattern")]
+    counts = {p: recent.count(p) for p in ("gap", "cosmic_duality", "vibrational_anchor")}
+    min_count = min(counts.values())
+    candidates = [p for p, c in counts.items() if c == min_count]
+    return random.choice(candidates)
+
+
+def generate_carousel_from_note(note, config, client, pattern: str):
     system = SYSTEM.format(**{k: config.get(k, "") for k in ("voice", "visual_style", "philosophy")})
-    prompt = ENTRY_PROMPT.format(title=note["title"], content=note["content"])
+    prompt = _PATTERN_ENTRY_PROMPTS[pattern].format(title=note["title"], content=note["content"])
     return _claude(system, prompt, client)
 
 
-def auto_generate_carousel(notes, config, client):
+def auto_generate_carousel(notes, config, client, pattern: str):
     import random
     system = SYSTEM.format(**{k: config.get(k, "") for k in ("voice", "visual_style", "philosophy")})
     if notes:
         samples = random.sample(notes, min(6, len(notes)))
         context = "\n\n---\n\n".join(f"[{n['title']}]\n{n['content'][:400]}" for n in samples)
-        prompt = AUTO_PROMPT.format(context=context)
+        prompt = _PATTERN_AUTO_PROMPTS[pattern].format(context=context)
     else:
-        prompt = EMPTY_VAULT_PROMPT
+        prompt = EMPTY_VAULT_PROMPTS[pattern]
     return _claude(system, prompt, client)
 
 
@@ -217,16 +322,18 @@ def phase1(generate_if_empty=False, dry_run=False):
         sys.exit(1)
     client = anthropic.Anthropic(api_key=api_key)
 
-    print("⚡  Generating carousel content via Claude...")
+    pattern = _pick_pattern(processed)
+    print(f"⚡  Generating carousel content via Claude (pattern: {pattern})...")
     if auto_mode:
-        result = auto_generate_carousel(notes, config, client)
+        result = auto_generate_carousel(notes, config, client, pattern)
         note = {
             "id": f"auto_{datetime.now().strftime('%Y%m%d_%H%M')}",
             "title": result.get("_title", "Auto Generated"),
             "content": result.get("_raw_content", ""),
         }
     else:
-        result = generate_carousel_from_note(note, config, client)
+        result = generate_carousel_from_note(note, config, client, pattern)
+    result["pattern"] = pattern
 
     caption_text = build_caption(result)
 
@@ -275,6 +382,7 @@ def phase1(generate_if_empty=False, dry_run=False):
     # Mark processed immediately (prevents double-generation)
     processed[note["id"]] = {
         "title": note["title"],
+        "pattern": pattern,
         "generated_at": datetime.now().isoformat(),
         "dry_run": dry_run,
         "output": out_dir.relative_to(BASE_DIR).as_posix(),
