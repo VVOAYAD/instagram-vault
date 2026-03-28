@@ -40,6 +40,7 @@ def generate_slide_images(base_prompt: str, config: dict, n_slides: int = 7) -> 
     if not token:
         raise RuntimeError("REPLICATE_API_TOKEN not set")
 
+    import time
     bg_bytes_list = []
     for i in range(n_slides):
         variation = _SLIDE_VARIATIONS[i % len(_SLIDE_VARIATIONS)]
@@ -47,6 +48,8 @@ def generate_slide_images(base_prompt: str, config: dict, n_slides: int = 7) -> 
         print(f"    Generating image {i + 1}/{n_slides}...")
         url = _replicate(prompt, token, config)
         bg_bytes_list.append(download_image_bytes(url))
+        if i < n_slides - 1:
+            time.sleep(12)  # stay within Replicate rate limit (6/min burst 1)
 
     return bg_bytes_list
 
