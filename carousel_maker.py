@@ -697,22 +697,31 @@ def slide_affirmation(n: int, text: str, bg_bytes: bytes, config: dict, total: i
     if n < total:
         _swipe_arrow(draw, accent)
 
-    # Wrap at word level first (untracked), then apply tracking to each line
+    # Tracking doubles the visual width, so wrap at ~40% of canvas width
+    # then shrink font until every tracked line fits within canvas margins
     raw = _clean(text).upper()
     nc = len(raw)
-    if nc < 25:
-        fs, max_w = 40, W - 200
-    elif nc < 50:
-        fs, max_w = 32, W - 180
+    if nc < 20:
+        fs = 36
+    elif nc < 40:
+        fs = 28
     else:
-        fs, max_w = 26, W - 160
+        fs = 22
 
+    margin = W - 100
     font = _font(fs, bold=False)
-    word_lines = _wrap(raw, font, draw, max_w)
-    # Apply 2-space tracking to each wrapped line
+    # Wrap using untracked width — allow generous line breaks
+    word_lines = _wrap(raw, font, draw, W - 220)
     tracked_lines = [_tracked_caps(line, spacing=2) for line in word_lines]
 
-    lh = int(fs * 1.70)
+    # Auto-shrink if any tracked line is wider than canvas
+    while any(_tw(draw, tl, font) > margin for tl in tracked_lines) and fs > 14:
+        fs -= 2
+        font = _font(fs, bold=False)
+        word_lines = _wrap(raw, font, draw, W - 220)
+        tracked_lines = [_tracked_caps(line, spacing=2) for line in word_lines]
+
+    lh = int(fs * 1.75)
     total_h = len(tracked_lines) * lh
     y0 = int(H * 0.75) - total_h // 2
 
@@ -878,41 +887,46 @@ def build_carousel_generic(slides: dict, bg_list: list, config: dict, out_dir: P
 
         # ── Fixed header (same on every slide) ───────────────────────────
         header_bottom_y = 0
-        card_top = 100 if bg_treatment == "white_card" else 0
-        card_bottom = H - 100 if bg_treatment == "white_card" else H
+        card_top = 110 if bg_treatment == "white_card" else 0
+        card_bottom = H - 110 if bg_treatment == "white_card" else H
 
         if fixed_header.strip():
-            h_font = _font(44, italic=(font_name == "italic"))
+            # Big, prominent header
+            h_font = _font(64, italic=(font_name == "italic"))
             h_text = _clean(fixed_header)
+            # Auto-shrink header to fit card width
+            h_max = W - 240
+            while _tw(draw, h_text, h_font) > h_max and h_font.size > 32:
+                h_font = _font(h_font.size - 4, italic=(font_name == "italic"))
             hw = _tw(draw, h_text, h_font)
             hx = (W - hw) // 2
-            hy = card_top + 50
+            hy = card_top + 60
             draw.text((hx, hy), h_text, font=h_font, fill=text_rgb)
-            header_bottom_y = hy + _th(draw, h_text, h_font) + 6
+            header_bottom_y = hy + _th(draw, h_text, h_font) + 8
 
             if fixed_subtitle.strip():
-                s_font = _font(28, italic=True)
+                s_font = _font(32, italic=True)
                 s_text = _clean(fixed_subtitle)
                 sw = _tw(draw, s_text, s_font)
                 draw.text(((W - sw) // 2, header_bottom_y), s_text,
-                          font=s_font, fill=_rgba(accent_hex, 200))
-                header_bottom_y += _th(draw, s_text, s_font) + 16
+                          font=s_font, fill=_rgba(accent_hex, 210))
+                header_bottom_y += _th(draw, s_text, s_font) + 20
 
-            # Thin divider under header block
-            _accent_line(img, W // 2, header_bottom_y + 8, 80, accent_hex, alpha=140)
-            header_bottom_y += 24
+            # Divider under header block
+            _accent_line(img, W // 2, header_bottom_y + 6, 100, accent_hex, alpha=160)
+            header_bottom_y += 28
 
         # ── Slide text ────────────────────────────────────────────────────
         slide_text = _clean(slide_texts[n - 1] if n - 1 < len(slide_texts) else "")
         nc = len(slide_text)
         if nc < 40:
-            fs, max_w = 58, W - 200
+            fs, max_w = 46, W - 220
         elif nc < 80:
-            fs, max_w = 46, W - 180
+            fs, max_w = 38, W - 200
         elif nc < 140:
-            fs, max_w = 38, W - 160
+            fs, max_w = 32, W - 180
         else:
-            fs, max_w = 30, W - 140
+            fs, max_w = 26, W - 160
 
         is_bold = font_name == "bold"
         is_italic = font_name == "italic"
