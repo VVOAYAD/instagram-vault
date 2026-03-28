@@ -1,13 +1,14 @@
 """
 Builds all 7 carousel slides as 1080x1080 JPEG images.
 
-Three patterns:
-  gap            — The Gap: dark bg, serif text, gold accents (original)
-  cosmic_duality — The Cosmic Duality: single words on AI bg, neon glow
+Five patterns:
+  gap                — The Gap: dark bg, serif text, gold accents
+  cosmic_duality     — The Cosmic Duality: single words on AI bg, neon glow
   vibrational_anchor — The Vibrational Anchor: gradient bg, bold white text
+  alien_affirmation  — The Alien Affirmation: full image, one affirmation per slide
+  anime_meme         — The Anime Meme: full image, one caption per slide (anime subtitle style)
 
-All slides now use the AI-generated background (heavily dimmed) for visual
-consistency throughout the carousel, not just slide 1.
+All slides use the AI-generated background for visual consistency.
 """
 
 import io
@@ -662,6 +663,144 @@ def build_carousel_anchor(slides: dict, bg_list: list, config: dict, out_dir: Pa
     return paths
 
 
+# ── Pattern 3: The Alien Affirmation ─────────────────────────────────────
+
+def slide_affirmation(n: int, text: str, bg_bytes: bytes, config: dict, total: int = 7) -> Image.Image:
+    """Full-bleed image, light veil, one affirmation in the lower third."""
+    bg = _crop_bg(bg_bytes, variation=n % 5)
+
+    # Very light veil — image is the hero
+    veil = Image.new("RGBA", (W, H), (0, 0, 0, 55))
+    bg = bg.convert("RGBA")
+    bg.paste(veil, mask=veil)
+
+    # Gradient at bottom so text is always readable
+    grad = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+    gd = ImageDraw.Draw(grad)
+    start = int(H * 0.58)
+    for y in range(start, H):
+        t = (y - start) / (H - start)
+        a = int(min(1.0, t * 2.0) * 200)
+        gd.line([(0, y), (W, y)], fill=(0, 0, 0, a))
+    bg.paste(grad, mask=grad)
+    bg = bg.convert("RGB")
+
+    draw = ImageDraw.Draw(bg)
+    accent = "#FFFFFF"
+    _slide_number(draw, n, total, accent)
+    if n < total:
+        _swipe_arrow(draw, accent)
+
+    text = _clean(text)
+    nc = len(text)
+    if nc < 30:
+        fs, max_w = 56, W - 160
+    elif nc < 60:
+        fs, max_w = 46, W - 140
+    else:
+        fs, max_w = 36, W - 120
+
+    font = _font(fs, bold=False)
+    lines = _wrap(text, font, draw, max_w)
+    lh = int(fs * 1.50)
+    total_h = len(lines) * lh
+
+    # Lower third — centered in the bottom 30% of the frame
+    y0 = int(H * 0.72) - total_h // 2
+
+    for i, line in enumerate(lines):
+        y = y0 + i * lh
+        x = (W - _tw(draw, line, font)) // 2
+        draw.text((x + 1, y + 1), line, font=font, fill=(0, 0, 0, 180))
+        draw.text((x, y), line, font=font, fill=(255, 255, 255))
+
+    return bg
+
+
+def build_carousel_alien(slides: dict, bg_list: list, config: dict, out_dir: Path) -> list:
+    """Alien Affirmation: each of 7 slides = full image + one affirmation."""
+    out_dir.mkdir(parents=True, exist_ok=True)
+    paths = []
+    print("  Building slides (Pattern: Alien Affirmation)...")
+
+    slide_texts = slides.get("slides", [])
+    for n in range(1, 8):
+        text = slide_texts[n - 1] if n - 1 < len(slide_texts) else ""
+        img = slide_affirmation(n, text, bg_list[n - 1], config, total=7)
+        p = out_dir / f"slide_{n:02d}.jpg"
+        img.save(str(p), "JPEG", quality=92)
+        paths.append(p)
+        print(f"    ✓ Slide {n}: {text[:40]}")
+
+    return paths
+
+
+# ── Pattern 4: The Anime Meme ─────────────────────────────────────────────
+
+def slide_anime_caption(n: int, text: str, bg_bytes: bytes, config: dict, total: int = 7) -> Image.Image:
+    """Full-bleed anime image, black-outlined white caption — anime subtitle style."""
+    bg = _crop_bg(bg_bytes, variation=n % 5)
+
+    # Medium veil so text pops without killing the image
+    veil = Image.new("RGBA", (W, H), (0, 0, 0, 85))
+    bg = bg.convert("RGBA")
+    bg.paste(veil, mask=veil)
+    bg = bg.convert("RGB")
+
+    draw = ImageDraw.Draw(bg)
+    accent = "#F59E0B"
+    _slide_number(draw, n, total, accent)
+    if n < total:
+        _swipe_arrow(draw, accent)
+
+    text = _clean(text)
+    nc = len(text)
+    if nc < 30:
+        fs, max_w = 72, W - 120
+    elif nc < 60:
+        fs, max_w = 58, W - 120
+    elif nc < 110:
+        fs, max_w = 46, W - 110
+    else:
+        fs, max_w = 36, W - 100
+
+    font = _font(fs, bold=True)
+    lines = _wrap(text, font, draw, max_w)
+    lh = int(fs * 1.48)
+    total_h = len(lines) * lh
+
+    # Vertically centered, nudged slightly below midpoint
+    y0 = int(H * 0.54) - total_h // 2
+
+    for i, line in enumerate(lines):
+        y = y0 + i * lh
+        x = (W - _tw(draw, line, font)) // 2
+        # Black outline (anime subtitle look)
+        for dx, dy in [(-2, -2), (2, -2), (-2, 2), (2, 2), (0, -2), (0, 2), (-2, 0), (2, 0)]:
+            draw.text((x + dx, y + dy), line, font=font, fill=(0, 0, 0))
+        draw.text((x, y), line, font=font, fill=(255, 255, 255))
+
+    return bg
+
+
+def build_carousel_anime(slides: dict, bg_list: list, config: dict, out_dir: Path) -> list:
+    """Anime Meme: each of 7 slides = retro anime image + one caption."""
+    out_dir.mkdir(parents=True, exist_ok=True)
+    paths = []
+    print("  Building slides (Pattern: Anime Meme)...")
+
+    slide_texts = slides.get("slides", [])
+    for n in range(1, 8):
+        text = slide_texts[n - 1] if n - 1 < len(slide_texts) else ""
+        img = slide_anime_caption(n, text, bg_list[n - 1], config, total=7)
+        p = out_dir / f"slide_{n:02d}.jpg"
+        img.save(str(p), "JPEG", quality=92)
+        paths.append(p)
+        print(f"    ✓ Slide {n}: {text[:40]}")
+
+    return paths
+
+
 # ── Main dispatcher ───────────────────────────────────────────────────────
 
 def build_carousel(slides: dict, bg_bytes_input, config: dict, out_dir: Path) -> list:
@@ -683,5 +822,9 @@ def build_carousel(slides: dict, bg_bytes_input, config: dict, out_dir: Path) ->
         return build_carousel_cosmic(slides, bg_list, config, out_dir)
     elif pattern == "vibrational_anchor":
         return build_carousel_anchor(slides, bg_list, config, out_dir)
+    elif pattern == "alien_affirmation":
+        return build_carousel_alien(slides, bg_list, config, out_dir)
+    elif pattern == "anime_meme":
+        return build_carousel_anime(slides, bg_list, config, out_dir)
     else:
         return build_carousel_gap(slides, bg_list, config, out_dir)

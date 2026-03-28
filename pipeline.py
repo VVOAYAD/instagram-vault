@@ -159,6 +159,56 @@ Return ONLY valid JSON:
   "image_prompt": "Flux prompt — retro-surrealist dreamcore, lone glowing human silhouette standing in vast surreal landscape, warm amber-peach-violet gradient sky, soft film grain texture, muted neon glow, painterly atmosphere, golden hour light bleeding through clouds, slight lens distortion, cinematic widescreen feel, NO text, NO words, NO letters in image"
 }}"""
 
+ALIEN_ENTRY_PROMPT = """Transform this raw download into a 7-slide Instagram carousel using THE ALIEN AFFIRMATION pattern.
+
+THE ALIEN AFFIRMATION: 7 bold, grounding one-liners — one per slide. Short. Confident. The kind of thing you post when you've actually done the inner work. Can be playful, dry, or deadpan.
+
+TITLE: {title}
+CONTENT:
+{content}
+
+Return ONLY valid JSON:
+{{
+  "pattern": "alien_affirmation",
+  "slides": [
+    "First affirmation — short, max 8 words",
+    "Second affirmation",
+    "Third affirmation",
+    "Fourth affirmation",
+    "Fifth affirmation",
+    "Sixth affirmation",
+    "Seventh affirmation — the one that lands hardest"
+  ],
+  "caption": "Full caption — no hashtags. Warm, 3-4 lines max.",
+  "hashtags": ["10", "to", "15", "hashtags"],
+  "image_prompt": "Flux prompt — 3D sculptural cosmic alien being, large smooth alien-shaped head, galaxy black almond eyes reflecting stars, full glossy lips, vivid solid-color fashion editorial background, glossy plastic skin texture, retro pop-art studio lighting, ultra-detailed, NO text NO words NO letters in image"
+}}"""
+
+ANIME_ENTRY_PROMPT = """Transform this raw download into a 7-slide Instagram carousel using THE ANIME MEME pattern.
+
+THE ANIME MEME: 7 slides, each a relatable one-liner delivered through retro anime energy. Consciousness, nervous system, and transformation themes — but as memes people send to their group chat. Funny, self-aware, dry. NOT preachy.
+
+TITLE: {title}
+CONTENT:
+{content}
+
+Return ONLY valid JSON:
+{{
+  "pattern": "anime_meme",
+  "slides": [
+    "First caption — relatable, max 12 words",
+    "Second caption",
+    "Third caption",
+    "Fourth caption",
+    "Fifth caption",
+    "Sixth caption",
+    "Seventh caption — the punchline or the deepest one"
+  ],
+  "caption": "Full caption — no hashtags. Playful but real. 3-4 lines.",
+  "hashtags": ["10", "to", "15", "hashtags"],
+  "image_prompt": "Flux prompt — retro 90s anime aesthetic, dramatic expressive character, vibrant high-contrast scene, deep purple and electric blue palette, bold cell-shaded outlines, dynamic cinematic angle, chromatic aberration, analog film grain, NO text NO words NO letters in image"
+}}"""
+
 # Auto-generate versions (no note context)
 GAP_AUTO_PROMPT = """Study these existing downloads:
 
@@ -229,22 +279,79 @@ Return ONLY valid JSON:
   "image_prompt": "Retro-surrealist dreamcore, glowing human silhouette, warm amber-violet sky, film grain, NO text, NO words in image"
 }}"""
 
+ALIEN_AUTO_PROMPT = """Study these existing downloads:
+
+{context}
+
+Generate ONE original insight using THE ALIEN AFFIRMATION pattern. 7 bold grounding one-liners, one per slide.
+
+Return ONLY valid JSON:
+{{
+  "pattern": "alien_affirmation",
+  "_title": "Name of this insight",
+  "_raw_content": "The full download — 3-6 sentences",
+  "slides": [
+    "First affirmation",
+    "Second affirmation",
+    "Third affirmation",
+    "Fourth affirmation",
+    "Fifth affirmation",
+    "Sixth affirmation",
+    "Seventh affirmation"
+  ],
+  "caption": "Full caption — no hashtags",
+  "hashtags": ["10", "hashtags"],
+  "image_prompt": "3D cosmic alien being, pop-art editorial, vivid backgrounds, NO text NO words in image"
+}}"""
+
+ANIME_AUTO_PROMPT = """Study these existing downloads:
+
+{context}
+
+Generate ONE original insight using THE ANIME MEME pattern. 7 relatable one-liners with retro anime energy.
+
+Return ONLY valid JSON:
+{{
+  "pattern": "anime_meme",
+  "_title": "Name of this insight",
+  "_raw_content": "The full download — 3-6 sentences",
+  "slides": [
+    "First caption",
+    "Second caption",
+    "Third caption",
+    "Fourth caption",
+    "Fifth caption",
+    "Sixth caption",
+    "Seventh caption"
+  ],
+  "caption": "Full caption — no hashtags",
+  "hashtags": ["10", "hashtags"],
+  "image_prompt": "Retro 90s anime, dramatic expressive character, vibrant colors, cinematic, NO text NO words in image"
+}}"""
+
 EMPTY_VAULT_PROMPTS = {
     "gap": GAP_AUTO_PROMPT.replace("{context}", "Write from pure consciousness wisdom — no context needed."),
     "cosmic_duality": COSMIC_AUTO_PROMPT.replace("{context}", "Write from pure consciousness wisdom — no context needed."),
     "vibrational_anchor": ANCHOR_AUTO_PROMPT.replace("{context}", "Write from pure consciousness wisdom — no context needed."),
+    "alien_affirmation": ALIEN_AUTO_PROMPT.replace("{context}", "Write from pure consciousness wisdom — no context needed."),
+    "anime_meme": ANIME_AUTO_PROMPT.replace("{context}", "Write from pure consciousness wisdom — no context needed."),
 }
 
 _PATTERN_ENTRY_PROMPTS = {
     "gap": GAP_ENTRY_PROMPT,
     "cosmic_duality": COSMIC_ENTRY_PROMPT,
     "vibrational_anchor": ANCHOR_ENTRY_PROMPT,
+    "alien_affirmation": ALIEN_ENTRY_PROMPT,
+    "anime_meme": ANIME_ENTRY_PROMPT,
 }
 _PATTERN_AUTO_PROMPTS = {
     "gap": GAP_AUTO_PROMPT,
     "cosmic_duality": COSMIC_AUTO_PROMPT,
     "vibrational_anchor": ANCHOR_AUTO_PROMPT,
+    "alien_affirmation": ALIEN_AUTO_PROMPT,
+    "anime_meme": ANIME_AUTO_PROMPT,
 }
+_ALL_PATTERNS = list(_PATTERN_ENTRY_PROMPTS.keys())
 
 
 def _claude(system, prompt, client):
@@ -267,10 +374,10 @@ def _claude(system, prompt, client):
 
 
 def _pick_pattern(processed: dict) -> str:
-    """Rotate through patterns so each appears roughly equally."""
+    """Rotate through all 5 patterns so each appears roughly equally."""
     import random
-    recent = [v.get("pattern") for v in list(processed.values())[-6:] if v.get("pattern")]
-    counts = {p: recent.count(p) for p in ("gap", "cosmic_duality", "vibrational_anchor")}
+    recent = [v.get("pattern") for v in list(processed.values())[-10:] if v.get("pattern")]
+    counts = {p: recent.count(p) for p in _ALL_PATTERNS}
     min_count = min(counts.values())
     candidates = [p for p, c in counts.items() if c == min_count]
     return random.choice(candidates)
