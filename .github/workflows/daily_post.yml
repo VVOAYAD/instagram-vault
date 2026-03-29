@@ -1,9 +1,9 @@
 name: Daily Instagram Post
 
 on:
-  # schedule:
-  #   - cron: '0 9 * * *'   # PAUSED — re-enable when ready to go live
-  workflow_dispatch:        # manual only for now
+  schedule:
+    - cron: '0 9 * * *'   # daily at 9am UTC (1pm Oman)
+  workflow_dispatch:        # also triggerable manually
     inputs:
       force_pattern:
         description: 'Force a specific pattern (gap, cosmic_duality, vibrational_anchor, alien_affirmation, anime_meme, scripture_card)'
