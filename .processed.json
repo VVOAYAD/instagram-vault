@@ -151,5 +151,12 @@
     "generated_at": "2026-03-29T09:48:47.511505",
     "dry_run": false,
     "output": "output/20260329_0948_you_called_survival_a_personality"
+  },
+  "auto_20260330_1023": {
+    "title": "The Gap Between Peace and Numbness",
+    "pattern": "gap",
+    "generated_at": "2026-03-30T10:25:51.201173",
+    "dry_run": false,
+    "output": "output/20260330_1025_the_gap_between_peace_and_numbness"
   }
 }
