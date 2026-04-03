@@ -179,5 +179,12 @@
     "generated_at": "2026-04-02T10:08:37.914216",
     "dry_run": false,
     "output": "output/20260402_1008_i_was_never_the_wound"
+  },
+  "auto_20260403_0957": {
+    "title": "The Body Knew First",
+    "pattern": "gap",
+    "generated_at": "2026-04-03T09:59:40.017477",
+    "dry_run": false,
+    "output": "output/20260403_0959_the_body_knew_first"
   }
 }
