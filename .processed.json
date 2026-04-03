@@ -186,5 +186,12 @@
     "generated_at": "2026-04-03T09:59:40.017477",
     "dry_run": false,
     "output": "output/20260403_0959_the_body_knew_first"
+  },
+  "auto_20260403_1004": {
+    "title": "The Threshold",
+    "pattern": "cosmic_duality",
+    "generated_at": "2026-04-03T10:06:49.792182",
+    "dry_run": false,
+    "output": "output/20260403_1006_the_threshold"
   }
 }
