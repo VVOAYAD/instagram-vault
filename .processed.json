@@ -200,5 +200,12 @@
     "generated_at": "2026-04-03T10:48:26.928282",
     "dry_run": false,
     "output": "output/20260403_1048_you_don_t_find_your_frequency"
+  },
+  "auto_20260403_1112": {
+    "title": "The Descent of Stillness",
+    "pattern": "scripture_card",
+    "generated_at": "2026-04-03T11:14:50.616785",
+    "dry_run": false,
+    "output": "output/20260403_1114_the_descent_of_stillness"
   }
 }
