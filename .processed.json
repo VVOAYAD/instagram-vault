@@ -207,5 +207,12 @@
     "generated_at": "2026-04-03T11:14:50.616785",
     "dry_run": false,
     "output": "output/20260403_1114_the_descent_of_stillness"
+  },
+  "auto_20260404_0949": {
+    "title": "The Cost of Survival",
+    "pattern": "cosmic_duality",
+    "generated_at": "2026-04-04T09:51:05.516393",
+    "dry_run": false,
+    "output": "output/20260404_0951_the_cost_of_survival"
   }
 }
