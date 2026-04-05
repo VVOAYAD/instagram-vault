@@ -3,7 +3,7 @@ Image generation via Google Imagen 3 (Gemini API).
 Much higher quality than Replicate Flux for cinematic/photorealistic imagery.
 ~$0.04 per image. 7 images per carousel = ~$0.28/post.
 
-API key: set GOOGLE_API_KEY environment variable (GitHub Secret).
+API key: set GEMINI_API environment variable (GitHub Secret).
 """
 
 import base64
@@ -33,9 +33,9 @@ def generate_slide_images(base_prompt: str, config: dict, n_slides: int = 7) -> 
     Generate n_slides images via Imagen 3, one per carousel slide.
     Returns list of bytes objects.
     """
-    api_key = os.environ.get("GOOGLE_API_KEY") or config.get("google_api_key", "")
+    api_key = os.environ.get("GEMINI_API") or config.get("google_api_key", "")
     if not api_key:
-        raise RuntimeError("GOOGLE_API_KEY not set")
+        raise RuntimeError("GEMINI_API not set")
 
     bg_bytes_list = []
     for i in range(n_slides):
