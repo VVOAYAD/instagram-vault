@@ -1,13 +1,19 @@
 """
-Image generation via Google Imagen 3 (Gemini API).
-Uses google-generativeai SDK with imagen-3.0-generate-001 model.
+Image generation via Google Gemini 2.0 Flash (image generation model).
+Uses direct REST API — no SDK version issues.
 
 API key: set GEMINI_API environment variable (GitHub Secret).
 """
 
+import base64
 import os
 import time
-import io
+import requests
+
+_GEMINI_IMG_URL = (
+    "https://generativelanguage.googleapis.com/v1beta/models/"
+    "gemini-2.0-flash-preview-image-generation:generateContent"
+)
 
 # Per-slide composition variations for Neoclassical Surrealism / Vaporwave / Dreamcore
 _SLIDE_VARIATIONS = [
@@ -22,35 +28,46 @@ _SLIDE_VARIATIONS = [
 
 
 def generate_slide_images(base_prompt: str, config: dict, n_slides: int = 7) -> list:
-    """Generate n_slides images via Imagen 3. Returns list of bytes objects."""
+    """Generate n_slides images. Returns list of bytes objects."""
     api_key = os.environ.get("GEMINI_API") or config.get("google_api_key", "")
     if not api_key:
         raise RuntimeError("GEMINI_API not set")
-
-    import google.generativeai as genai
-    genai.configure(api_key=api_key)
-    model = genai.ImageGenerationModel("imagen-3.0-generate-001")
 
     bg_bytes_list = []
     for i in range(n_slides):
         variation = _SLIDE_VARIATIONS[i % len(_SLIDE_VARIATIONS)]
         prompt = f"{base_prompt.rstrip('. ')}. {variation}"
-        print(f"    Generating image {i + 1}/{n_slides} via Imagen 3...")
-
-        result = model.generate_images(
-            prompt=prompt,
-            number_of_images=1,
-            aspect_ratio="1:1",
-            safety_filter_level="block_only_high",
-            person_generation="allow_adult",
-        )
-
-        img = result.images[0]
-        buf = io.BytesIO()
-        img._pil_image.save(buf, format="JPEG", quality=95)
-        bg_bytes_list.append(buf.getvalue())
-
+        print(f"    Generating image {i + 1}/{n_slides} via Gemini Imagen...")
+        img_bytes = _generate(prompt, api_key)
+        bg_bytes_list.append(img_bytes)
         if i < n_slides - 1:
-            time.sleep(1)
+            time.sleep(2)
 
     return bg_bytes_list
+
+
+def _generate(prompt: str, api_key: str) -> bytes:
+    payload = {
+        "contents": [{"parts": [{"text": prompt}]}],
+        "generationConfig": {"responseModalities": ["IMAGE"]},
+    }
+
+    resp = requests.post(
+        _GEMINI_IMG_URL,
+        params={"key": api_key},
+        json=payload,
+        timeout=60,
+    )
+
+    if resp.status_code != 200:
+        raise RuntimeError(f"Gemini image error {resp.status_code}: {resp.text[:300]}")
+
+    data = resp.json()
+    try:
+        parts = data["candidates"][0]["content"]["parts"]
+        for part in parts:
+            if "inlineData" in part:
+                return base64.b64decode(part["inlineData"]["data"])
+        raise RuntimeError(f"No image in response: {data}")
+    except (KeyError, IndexError) as e:
+        raise RuntimeError(f"Unexpected response structure: {data}") from e
