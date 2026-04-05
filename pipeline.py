@@ -487,8 +487,13 @@ def phase1(generate_if_empty=False, dry_run=False, force_pattern=None):
     caption_text = build_caption(result)
 
     # Generate 7 unique AI background images — one per slide
-    print("🎨  Generating 7 background images via Replicate (Flux)...")
-    from image_gen import generate_slide_images
+    # Prefer Imagen 3 (Google) if key is available, fall back to Replicate
+    if os.environ.get("GOOGLE_API_KEY") or config.get("google_api_key", ""):
+        print("🎨  Generating 7 background images via Imagen 3 (Google)...")
+        from image_gen_gemini import generate_slide_images
+    else:
+        print("🎨  Generating 7 background images via Replicate (Flux)...")
+        from image_gen import generate_slide_images
     bg_bytes_list = generate_slide_images(result.get("image_prompt", ""), config, n_slides=7)
 
     # Build all 7 carousel slides with Pillow

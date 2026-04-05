@@ -360,9 +360,28 @@ def build_carousel_gap(slides: dict, bg_list: list, config: dict, out_dir: Path)
 # ── Pattern 1: The Cosmic Duality ─────────────────────────────────────────
 
 _COSMIC_ACCENT = "#C4A97D"  # single warm gold — the image provides all other color
+_COSMIC_FONT = str(_FONTS_DIR / "CormorantGaramond-LightItalic.ttf")  # thin elegant serif
 
 # Vertical position of word per slide (fraction of H for the text baseline)
 _COSMIC_WORD_Y = [0.12, 0.44, 0.72, 0.14]  # slides 1-4: top / center / lower / top
+
+
+def _cosmic_font(size: int) -> ImageFont.FreeTypeFont:
+    """Cormorant Garamond Light Italic — falls back to Playfair if missing."""
+    key = ("cosmic", size)
+    if key in _cache:
+        return _cache[key]
+    for path in [_COSMIC_FONT] + _ITALIC:
+        if os.path.exists(path):
+            try:
+                f = ImageFont.truetype(path, size)
+                _cache[key] = f
+                return f
+            except Exception:
+                continue
+    f = ImageFont.load_default()
+    _cache[key] = f
+    return f
 
 
 def _spaced_width(draw: ImageDraw.Draw, text: str, font, spacing: int) -> int:
@@ -376,16 +395,34 @@ def _spaced_width(draw: ImageDraw.Draw, text: str, font, spacing: int) -> int:
     return total
 
 
-def _draw_spaced(draw: ImageDraw.Draw, text: str, x: int, y: int,
-                 font, fill, spacing: int, shadow: bool = True):
-    """Draw text character-by-character with tracking."""
+def _draw_spaced_glow(img: Image.Image, text: str, x: int, y: int,
+                      font, fill_rgb: tuple, spacing: int,
+                      glow_color: tuple = (200, 180, 255), glow_radius: int = 18):
+    """Draw spaced text with a soft gaussian glow halo behind it."""
+    # ── Build the text on a transparent layer ────────────────────────────
+    text_layer = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+    td = ImageDraw.Draw(text_layer)
     cx = x
     for ch in text:
-        if shadow:
-            draw.text((cx + 2, y + 3), ch, font=font, fill=(0, 0, 0, 120))
-        draw.text((cx, y), ch, font=font, fill=fill)
-        bb = draw.textbbox((0, 0), ch, font=font)
+        td.text((cx, y), ch, font=font, fill=(*fill_rgb, 255))
+        bb = td.textbbox((0, 0), ch, font=font)
         cx += (bb[2] - bb[0]) + spacing
+
+    # ── Glow: colorize the text layer, blur it, composite under text ─────
+    glow_layer = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+    gd = ImageDraw.Draw(glow_layer)
+    cx = x
+    for ch in text:
+        gd.text((cx, y), ch, font=font, fill=(*glow_color, 200))
+        bb = gd.textbbox((0, 0), ch, font=font)
+        cx += (bb[2] - bb[0]) + spacing
+    glow_layer = glow_layer.filter(ImageFilter.GaussianBlur(glow_radius))
+
+    # Composite: glow first, then sharp text on top
+    img_rgba = img.convert("RGBA")
+    img_rgba = Image.alpha_composite(img_rgba, glow_layer)
+    img_rgba = Image.alpha_composite(img_rgba, text_layer)
+    return img_rgba.convert("RGB")
 
 
 def slide_cosmic_word(n: int, word: str, bg_bytes: bytes, config: dict) -> Image.Image:
@@ -402,28 +439,28 @@ def slide_cosmic_word(n: int, word: str, bg_bytes: bytes, config: dict) -> Image
     _swipe_arrow(draw, _COSMIC_ACCENT)
 
     word = _clean(word).upper()
+    spacing = 18
 
-    # Size: find the largest fs where the spaced word fits within W - 160
-    spacing = 16
-    for fs in (90, 78, 66, 56, 46):
-        font = _font(fs, italic=True)
+    # Find largest size that fits within W - 160
+    for fs in (100, 86, 72, 60, 50):
+        font = _cosmic_font(fs)
         sw = _spaced_width(draw, word, font, spacing)
         if sw <= W - 160:
             break
 
     sw = _spaced_width(draw, word, font, spacing)
-    bb_sample = draw.textbbox((0, 0), word[0] if word else "M", font=font)
-    char_h = bb_sample[3] - bb_sample[1]
 
     # Vertical position varies per slide
     y_frac = _COSMIC_WORD_Y[(n - 1) % len(_COSMIC_WORD_Y)]
     y = int(H * y_frac)
     x = (W - sw) // 2
 
-    # Cream text, slightly ghostly
-    fill = (*_rgb("#F0EBE0"), 210)
-    _draw_spaced(draw, word, x, y, font, fill, spacing, shadow=True)
-
+    # Cream text with soft luminous glow
+    bg = _draw_spaced_glow(bg, word, x, y, font,
+                           fill_rgb=_rgb("#F0EBE0"),
+                           spacing=spacing,
+                           glow_color=(220, 200, 255),
+                           glow_radius=20)
     return bg
 
 
@@ -453,8 +490,13 @@ def slide_cosmic_reveal(n: int, text: str, bg_bytes: bytes, config: dict) -> Ima
     for i, line in enumerate(lines):
         y = y0 + i * lh
         x = (W - _tw(draw, line, font)) // 2
-        draw.text((x + 2, y + 3), line, font=font, fill=(0, 0, 0, 160))
-        draw.text((x, y), line, font=font, fill=_rgb("#F0EBE0"))
+        # Draw glow per line
+        bg = _draw_spaced_glow(bg, line, x, y, font,
+                               fill_rgb=_rgb("#F0EBE0"),
+                               spacing=0,
+                               glow_color=(220, 200, 255),
+                               glow_radius=16)
+        draw = ImageDraw.Draw(bg)
 
     # Single thin accent line below the text
     _accent_line(bg, W // 2, y0 + total_h + 20, 70, accent_hex, alpha=120)
