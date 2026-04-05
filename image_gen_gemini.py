@@ -1,23 +1,15 @@
 """
 Image generation via Google Imagen 3 (Gemini API).
-Much higher quality than Replicate Flux for cinematic/photorealistic imagery.
-~$0.04 per image. 7 images per carousel = ~$0.28/post.
+Uses google-generativeai SDK with imagen-3.0-generate-001 model.
 
 API key: set GEMINI_API environment variable (GitHub Secret).
 """
 
-import base64
 import os
 import time
-import requests
+import io
 
-_GEMINI_URL = (
-    "https://generativelanguage.googleapis.com/v1beta/models/"
-    "imagen-3.0-generate-001:predict"
-)
-
-# Per-slide composition variations — layered on top of the base prompt
-# Tuned for Neoclassical Surrealism / Vaporwave / Dreamcore aesthetic
+# Per-slide composition variations for Neoclassical Surrealism / Vaporwave / Dreamcore
 _SLIDE_VARIATIONS = [
     "dramatic close-up bust, glowing jagged rift down the center revealing deep space nebula inside, cyan and magenta rim lighting, chromatic aberration edges",
     "wide shot full-body kneeling marble figure, vertical beam of white light splitting two halves, dark void background, vibrant pink and yellow wildflowers at base, volumetric lighting",
@@ -30,52 +22,35 @@ _SLIDE_VARIATIONS = [
 
 
 def generate_slide_images(base_prompt: str, config: dict, n_slides: int = 7) -> list:
-    """
-    Generate n_slides images via Imagen 3, one per carousel slide.
-    Returns list of bytes objects.
-    """
+    """Generate n_slides images via Imagen 3. Returns list of bytes objects."""
     api_key = os.environ.get("GEMINI_API") or config.get("google_api_key", "")
     if not api_key:
         raise RuntimeError("GEMINI_API not set")
+
+    import google.generativeai as genai
+    genai.configure(api_key=api_key)
+    model = genai.ImageGenerationModel("imagen-3.0-generate-001")
 
     bg_bytes_list = []
     for i in range(n_slides):
         variation = _SLIDE_VARIATIONS[i % len(_SLIDE_VARIATIONS)]
         prompt = f"{base_prompt.rstrip('. ')}. {variation}"
         print(f"    Generating image {i + 1}/{n_slides} via Imagen 3...")
-        img_bytes = _imagen3(prompt, api_key)
-        bg_bytes_list.append(img_bytes)
+
+        result = model.generate_images(
+            prompt=prompt,
+            number_of_images=1,
+            aspect_ratio="1:1",
+            safety_filter_level="block_only_high",
+            person_generation="allow_adult",
+        )
+
+        img = result.images[0]
+        buf = io.BytesIO()
+        img._pil_image.save(buf, format="JPEG", quality=95)
+        bg_bytes_list.append(buf.getvalue())
+
         if i < n_slides - 1:
-            time.sleep(2)  # Imagen 3 is fast, small buffer is enough
+            time.sleep(1)
 
     return bg_bytes_list
-
-
-def _imagen3(prompt: str, api_key: str) -> bytes:
-    """Call Imagen 3 and return raw image bytes."""
-    payload = {
-        "instances": [{"prompt": prompt}],
-        "parameters": {
-            "sampleCount": 1,
-            "aspectRatio": "1:1",
-            "safetySetting": "block_only_high",
-            "personGeneration": "allow_adult",
-        },
-    }
-
-    resp = requests.post(
-        _GEMINI_URL,
-        params={"key": api_key},
-        json=payload,
-        timeout=60,
-    )
-
-    if resp.status_code != 200:
-        raise RuntimeError(f"Imagen 3 error {resp.status_code}: {resp.text[:300]}")
-
-    data = resp.json()
-    try:
-        b64 = data["predictions"][0]["bytesBase64Encoded"]
-        return base64.b64decode(b64)
-    except (KeyError, IndexError) as e:
-        raise RuntimeError(f"Unexpected Imagen 3 response: {data}") from e
