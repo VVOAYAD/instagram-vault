@@ -359,60 +359,77 @@ def build_carousel_gap(slides: dict, bg_list: list, config: dict, out_dir: Path)
 
 # ── Pattern 1: The Cosmic Duality ─────────────────────────────────────────
 
-_COSMIC_ACCENTS = ["#7C3AED", "#0EA5E9", "#14B8A6", "#8B5CF6", "#06B6D4"]
+_COSMIC_ACCENT = "#C4A97D"  # single warm gold — the image provides all other color
+
+# Vertical position of word per slide (fraction of H for the text baseline)
+_COSMIC_WORD_Y = [0.12, 0.44, 0.72, 0.14]  # slides 1-4: top / center / lower / top
+
+
+def _spaced_width(draw: ImageDraw.Draw, text: str, font, spacing: int) -> int:
+    """Total pixel width of text with per-character spacing."""
+    total = 0
+    for i, ch in enumerate(text):
+        bb = draw.textbbox((0, 0), ch, font=font)
+        total += bb[2] - bb[0]
+        if i < len(text) - 1:
+            total += spacing
+    return total
+
+
+def _draw_spaced(draw: ImageDraw.Draw, text: str, x: int, y: int,
+                 font, fill, spacing: int, shadow: bool = True):
+    """Draw text character-by-character with tracking."""
+    cx = x
+    for ch in text:
+        if shadow:
+            draw.text((cx + 2, y + 3), ch, font=font, fill=(0, 0, 0, 120))
+        draw.text((cx, y), ch, font=font, fill=fill)
+        bb = draw.textbbox((0, 0), ch, font=font)
+        cx += (bb[2] - bb[0]) + spacing
 
 
 def slide_cosmic_word(n: int, word: str, bg_bytes: bytes, config: dict) -> Image.Image:
-    """Single large word on AI background with neon glow."""
+    """Single spaced word floating over AI background. Image is the hero."""
+    # Very light veil — let the image breathe
     bg = _crop_bg(bg_bytes, variation=n)
-
-    veil = Image.new("RGBA", (W, H), (0, 0, 0, 170))
+    veil = Image.new("RGBA", (W, H), (0, 0, 0, 55))
     bg = bg.convert("RGBA")
     bg.paste(veil, mask=veil)
-
-    accent_hex = _COSMIC_ACCENTS[(n - 1) % len(_COSMIC_ACCENTS)]
-    tint = Image.new("RGBA", (W, H), (*_rgb(accent_hex), 25))
-    bg.paste(tint, mask=tint)
     bg = bg.convert("RGB")
 
     draw = ImageDraw.Draw(bg)
-    _slide_number(draw, n, 7, accent_hex)
-    _swipe_arrow(draw, accent_hex)
+    _slide_number(draw, n, 7, _COSMIC_ACCENT)
+    _swipe_arrow(draw, _COSMIC_ACCENT)
 
-    word = _clean(word)
-    fs = 200
-    font = _font(fs, italic=True)
-    while _tw(draw, word, font) > W - 80 and fs > 60:
-        fs -= 10
+    word = _clean(word).upper()
+
+    # Size: find the largest fs where the spaced word fits within W - 160
+    spacing = 16
+    for fs in (90, 78, 66, 56, 46):
         font = _font(fs, italic=True)
+        sw = _spaced_width(draw, word, font, spacing)
+        if sw <= W - 160:
+            break
 
-    bb = draw.textbbox((0, 0), word, font=font)
-    word_w = bb[2] - bb[0]
-    word_h = bb[3] - bb[1]
-    x = (W - word_w) // 2 - bb[0]
-    y = (H - word_h) // 2 - bb[1]
+    sw = _spaced_width(draw, word, font, spacing)
+    bb_sample = draw.textbbox((0, 0), word[0] if word else "M", font=font)
+    char_h = bb_sample[3] - bb_sample[1]
 
-    glow_ov = Image.new("RGBA", (W, H), (0, 0, 0, 0))
-    gd = ImageDraw.Draw(glow_ov)
-    pad = 60
-    gd.rectangle([x + bb[0] - pad, y + bb[1] - pad,
-                  x + bb[2] + pad, y + bb[3] + pad],
-                 fill=(*_rgb(accent_hex), 60))
-    glow_ov = glow_ov.filter(ImageFilter.GaussianBlur(45))
-    bg = bg.convert("RGBA")
-    bg.paste(glow_ov, mask=glow_ov)
-    bg = bg.convert("RGB")
+    # Vertical position varies per slide
+    y_frac = _COSMIC_WORD_Y[(n - 1) % len(_COSMIC_WORD_Y)]
+    y = int(H * y_frac)
+    x = (W - sw) // 2
 
-    draw = ImageDraw.Draw(bg)
-    draw.text((x + 2, y + 2), word, font=font, fill=(0, 0, 0, 180))
-    draw.text((x, y), word, font=font, fill=_rgb("#F0EBE0"))
+    # Cream text, slightly ghostly
+    fill = (*_rgb("#F0EBE0"), 210)
+    _draw_spaced(draw, word, x, y, font, fill, spacing, shadow=True)
 
     return bg
 
 
 def slide_cosmic_reveal(n: int, text: str, bg_bytes: bytes, config: dict) -> Image.Image:
-    """Full revelation sentence on AI background."""
-    bg = _dimmed_ai_bg(bg_bytes, overlay_alpha=155, blur=1.0, variation=n)
+    """Full revelation sentence — the gut-punch. Image stays visible, text is the hero."""
+    bg = _dimmed_ai_bg(bg_bytes, overlay_alpha=100, blur=0.8, variation=n)
 
     accent_hex = "#C4A97D"
     draw = ImageDraw.Draw(bg)
@@ -420,27 +437,27 @@ def slide_cosmic_reveal(n: int, text: str, bg_bytes: bytes, config: dict) -> Ima
     if n < 7:
         _swipe_arrow(draw, accent_hex)
 
-    max_w = W - 120
-    for fs in (80, 68, 56, 46, 38):
+    # Position at top third — image fills the rest
+    max_w = W - 100
+    for fs in (76, 64, 54, 46, 38):
         font = _font(fs, italic=True)
         lines = _wrap(text, font, draw, max_w)
-        lh = int(fs * 1.38)
-        if len(lines) * lh < H * 0.5:
+        lh = int(fs * 1.45)
+        if len(lines) * lh < H * 0.42:
             break
 
-    lh = int(fs * 1.38)
+    lh = int(fs * 1.45)
     total_h = len(lines) * lh
-    y0 = (H - total_h) // 2
-
-    _accent_line(bg, W // 2, y0 - 36, 90, accent_hex)
+    y0 = int(H * 0.10)
 
     for i, line in enumerate(lines):
         y = y0 + i * lh
         x = (W - _tw(draw, line, font)) // 2
-        draw.text((x + 2, y + 2), line, font=font, fill=(0, 0, 0))
+        draw.text((x + 2, y + 3), line, font=font, fill=(0, 0, 0, 160))
         draw.text((x, y), line, font=font, fill=_rgb("#F0EBE0"))
 
-    _accent_line(bg, W // 2, y0 + total_h + 28, 90, accent_hex)
+    # Single thin accent line below the text
+    _accent_line(bg, W // 2, y0 + total_h + 20, 70, accent_hex, alpha=120)
 
     return bg
 

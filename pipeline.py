@@ -133,7 +133,7 @@ Return ONLY valid JSON:
   "slide_7_cta": "Save this.",
   "caption": "Full caption — no hashtags. Starts with the revelation, expands.",
   "hashtags": ["10", "to", "15", "hashtags"],
-  "image_prompt": "Flux prompt — neo-classical marble male statue fragmenting and glitching apart into horizontal shards of light, golden neon and iridescent light emanating from within the glitch breaks, two ancient Greek Corinthian columns flanking the scene left and right, dark reflective ocean water below with pink and magenta light reflection on the surface, deep black background, chromatic aberration rainbow edges on every glitch shard, purple and magenta atmospheric glow, vaporwave digital glitch art, ultra-cinematic dramatic lighting, NO text NO words NO letters in image"
+  "image_prompt": "Flux prompt — hyper-detailed neo-classical marble statue split down the center, left half cracked ancient stone in warm amber-gold light, right half pristine white marble in cold blue-violet light, chromatic aberration fringing along the split, vivid pink and magenta wildflowers with neon chromatic glow clustered at the base, deep black void background with faint starfield, cinematic dramatic lighting, sharp photorealistic detail, editorial fashion photography quality, NO text NO words NO letters in image"
 }}"""
 
 ANCHOR_ENTRY_PROMPT = """Transform this raw download into a 7-slide Instagram carousel using THE VIBRATIONAL ANCHOR pattern.
@@ -253,7 +253,7 @@ Return ONLY valid JSON:
   "slide_7_cta": "Save this.",
   "caption": "Full caption — no hashtags",
   "hashtags": ["10", "hashtags"],
-  "image_prompt": "Neo-classical marble statue glitching into horizontal neon shards, golden light from within, Greek columns flanking, dark ocean below with pink reflection, chromatic aberration, vaporwave, NO text NO words in image"
+  "image_prompt": "Hyper-detailed neo-classical marble statue split down the center, left half cracked ancient stone in warm amber-gold light, right half pristine white marble in cold blue-violet light, chromatic aberration fringing along the split, vivid pink and magenta wildflowers with neon chromatic glow at the base, deep black void background with faint starfield, cinematic dramatic lighting, sharp photorealistic detail, NO text NO words NO letters in image"
 }}"""
 
 ANCHOR_AUTO_PROMPT = """Study these existing downloads:
