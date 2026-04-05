@@ -193,5 +193,33 @@
     "generated_at": "2026-04-03T10:06:49.792182",
     "dry_run": false,
     "output": "output/20260403_1006_the_threshold"
+  },
+  "auto_20260403_1046": {
+    "title": "You Don't Find Your Frequency",
+    "pattern": "vibrational_anchor",
+    "generated_at": "2026-04-03T10:48:26.928282",
+    "dry_run": false,
+    "output": "output/20260403_1048_you_don_t_find_your_frequency"
+  },
+  "auto_20260403_1112": {
+    "title": "The Descent of Stillness",
+    "pattern": "scripture_card",
+    "generated_at": "2026-04-03T11:14:50.616785",
+    "dry_run": false,
+    "output": "output/20260403_1114_the_descent_of_stillness"
+  },
+  "auto_20260404_0949": {
+    "title": "The Cost of Survival",
+    "pattern": "cosmic_duality",
+    "generated_at": "2026-04-04T09:51:05.516393",
+    "dry_run": false,
+    "output": "output/20260404_0951_the_cost_of_survival"
+  },
+  "auto_20260405_0949": {
+    "title": "The Stillness Before All Movement",
+    "pattern": "scripture_card",
+    "generated_at": "2026-04-05T09:51:19.266345",
+    "dry_run": false,
+    "output": "output/20260405_0951_the_stillness_before_all_movement"
   }
 }
