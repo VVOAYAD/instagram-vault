@@ -228,5 +228,12 @@
     "generated_at": "2026-04-05T17:12:07.225192",
     "dry_run": false,
     "output": "output/20260405_1712_the_architecture_of_protection"
+  },
+  "auto_20260405_1744": {
+    "title": "The Grip That Starves",
+    "pattern": "cosmic_duality",
+    "generated_at": "2026-04-05T17:45:57.322035",
+    "dry_run": false,
+    "output": "output/20260405_1745_the_grip_that_starves"
   }
 }
