@@ -133,7 +133,7 @@ Return ONLY valid JSON:
   "slide_7_cta": "Save this.",
   "caption": "Full caption — no hashtags. Starts with the revelation, expands.",
   "hashtags": ["10", "to", "15", "hashtags"],
-  "image_prompt": "hyper-detailed neo-classical marble statue split down the center, left half cracked ancient stone in warm amber-gold light, right half pristine white marble in cold blue-violet light, chromatic aberration fringing along the split, vivid pink and magenta wildflowers with neon chromatic glow clustered at the base, deep black void background with faint starfield, cinematic dramatic lighting, sharp photorealistic detail, editorial fashion photography quality, NO text NO words NO letters in image"
+  "image_prompt": "Surreal 3D digital render of a classical Greek marble bust split vertically down the center, glowing jagged rift revealing shimmering cosmic starfield and deep space nebula inside the crack, surrounded by vibrant hyper-realistic pink and yellow wildflowers, dramatic high-contrast lighting with cyan and magenta rim light, dark moody background, subtle chromatic aberration, volumetric lighting, Neoclassical Surrealism Vaporwave Dreamcore aesthetic, 8k cinematic composition, NO text NO words NO letters in image"
 }}"""
 
 ANCHOR_ENTRY_PROMPT = """Transform this raw download into a 7-slide Instagram carousel using THE VIBRATIONAL ANCHOR pattern.
@@ -253,7 +253,7 @@ Return ONLY valid JSON:
   "slide_7_cta": "Save this.",
   "caption": "Full caption — no hashtags",
   "hashtags": ["10", "hashtags"],
-  "image_prompt": "Hyper-detailed neo-classical marble statue split down the center, left half cracked ancient stone in warm amber-gold light, right half pristine white marble in cold blue-violet light, chromatic aberration fringing along the split, vivid pink and magenta wildflowers with neon chromatic glow at the base, deep black void background with faint starfield, cinematic dramatic lighting, sharp photorealistic detail, NO text NO words NO letters in image"
+  "image_prompt": "Surreal 3D digital render of a classical Greek marble bust split vertically, glowing rift revealing cosmic starfield inside, vibrant pink and yellow wildflowers at base, cyan and magenta rim lighting, chromatic aberration, dark moody background, Neoclassical Surrealism Vaporwave Dreamcore, volumetric lighting, 8k cinematic, NO text NO words NO letters in image"
 }}"""
 
 ANCHOR_AUTO_PROMPT = """Study these existing downloads:

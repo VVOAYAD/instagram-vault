@@ -17,14 +17,15 @@ _GEMINI_URL = (
 )
 
 # Per-slide composition variations — layered on top of the base prompt
+# Tuned for Neoclassical Surrealism / Vaporwave / Dreamcore aesthetic
 _SLIDE_VARIATIONS = [
-    "dramatic close-up, extreme shadow and light contrast, intense atmosphere",
-    "wide ethereal composition, cool deep blue tones, vast cosmic space",
-    "split symmetrical composition, electric light dividing two halves, violet tones",
-    "warm amber and gold light, organic dissolving forms, crumbling stone edges",
-    "full figure emerging from total darkness, single revelation light source",
-    "minimal abstract, one concentrated glow at center, near-black background",
-    "very dark cinematic, ultra-minimal, one soft light, final stillness",
+    "dramatic close-up bust, glowing jagged rift down the center revealing deep space nebula inside, cyan and magenta rim lighting, chromatic aberration edges",
+    "wide shot full-body kneeling marble figure, vertical beam of white light splitting two halves, dark void background, vibrant pink and yellow wildflowers at base, volumetric lighting",
+    "left half molten volcanic red obsidian, right half pristine white marble in golden light, electric blue lightning bolt splitting center, lush dew-covered flowers, high chiaroscuro",
+    "ancient Roman bust, one half cracked and weathered stone in warm amber, other half smooth marble in cold blue-violet, cosmic starfield visible through the crack, synthwave color palette",
+    "full figure marble statue fragmenting into neon light shards, bioluminescent flora surrounding the base, deep black void, ray-traced reflections, surrealist masterpiece",
+    "extreme close-up marble face, one eye cosmic void with stars, other eye intact stone, magenta and teal rim light, chromatic aberration, moody cinematic atmosphere",
+    "dark minimal, single marble torso dissolving into starfield at the edges, soft warm glow at center, wildflowers fading into darkness at base, final stillness",
 ]
 
 
