@@ -29,6 +29,7 @@ import instagram
 ROOT = Path(__file__).parent
 CONFIG_PATH = ROOT / "config.json"
 AESTHETIC_PATH = ROOT / "aesthetic.md"
+KB_PATH = ROOT / "knowledge_base.md"
 OUTPUT_DIR = ROOT / "output"
 STATE_PATH = ROOT / ".last_post.json"
 
@@ -40,55 +41,15 @@ TEXT_MODEL = "gemini-2.5-flash"
 INSPO_DIR = ROOT / "style_refs"
 INSPO_COUNT = 6  # reference images sent with every slide call (max 14)
 
-THEMES = [
-    # philosophy & consciousness
-    "consciousness as a felt sense, not a concept",
-    "knowing thyself — the permanent self beneath the conditioning",
-    "becoming — the version of you that already exists",
-
-    # nervous system & body
-    "nervous system regulation — the body before the belief",
-    "anxiety as old protection, not a warning about now",
-    "feeling your feelings instead of managing them",
-
-    # patterns & habits
-    "noticing the patterns you keep repeating in relationships",
-    "why the same kind of person keeps showing up in your life",
-    "breaking a habit that numbs you instead of heals you",
-    "the small daily choices that are actually shaping you",
-    "how your avoidance is costing you the thing you want",
-
-    # people-pleasing & boundaries
-    "people-pleasing is self-abandonment with a smile",
-    "the cost of being 'the nice one'",
-    "saying no without explaining yourself",
-    "when being understanding is actually betraying yourself",
-
-    # overthinking & mind
-    "overthinking is avoidance dressed as responsibility",
-    "the thoughts you keep on repeat are not all yours",
-    "stop negotiating with your inner critic",
-
-    # self-worth & self-abandonment
-    "self-worth as something you are, not something you earn",
-    "you don't need to perform to deserve rest",
-    "the version of love that needs you to shrink is not love",
-
-    # sovereignty & business
-    "standing on business — sovereignty, discernment, not shrinking",
-    "discipline is love. motivation is a mood.",
-    "charging your worth without apologizing for it",
-
-    # growth & evolution
-    "growth is unglamorous — the grief of outgrowing who you were",
-    "expansion — holding more without collapsing",
-    "letting the old version of you die without flinching",
-    "why healing feels like losing everything at first",
-
-    # shadow & trauma
-    "your triggers are teachers, not enemies",
-    "what you reject in others is usually exiled in you",
-    "the trauma response you've been calling your personality",
+# Weekly domain rotation — one per day of week. Monday = weekday 0.
+DOMAINS = [
+    "Nervous system & trauma",        # Monday
+    "Consciousness & presence",       # Tuesday
+    "Shadow & self",                  # Wednesday
+    "Embodiment",                     # Thursday
+    "Philosophy & wisdom",            # Friday
+    "Energy & reiki",                 # Saturday
+    "Becoming & integration",         # Sunday
 ]
 
 PALETTES = [
@@ -127,17 +88,63 @@ def load_aesthetic() -> str:
     return AESTHETIC_PATH.read_text(encoding="utf-8")
 
 
-def pick_theme(today: dt.date) -> str:
-    return THEMES[today.toordinal() % len(THEMES)]
+def pick_domain(today: dt.date) -> str:
+    """Monday = DOMAINS[0], Sunday = DOMAINS[6]."""
+    return DOMAINS[today.weekday()]
 
 
-def pick_palette_and_motif(seed: int) -> tuple[str, str]:
+def load_kb() -> dict[str, list[str]]:
+    """Parse knowledge_base.md into {domain_key: [insights...]}.
+
+    Domain headers are lines like '## MONDAY — Nervous system & trauma'.
+    Insights are numbered lines '1. [tag] The insight text.'
+    Tag brackets are stripped so Gemini never sees teacher names.
+    """
+    text = KB_PATH.read_text(encoding="utf-8")
+    domains: dict[str, list[str]] = {}
+    current: str | None = None
+    for raw in text.splitlines():
+        line = raw.rstrip()
+        if line.startswith("## ") and "—" in line:
+            current = line.split("—", 1)[1].strip()
+            domains[current] = []
+            continue
+        if current and line and line[0].isdigit() and ". " in line[:5]:
+            body = line.split(". ", 1)[1].strip()
+            if body.startswith("[") and "]" in body:
+                body = body.split("]", 1)[1].strip()
+            if body:
+                domains[current].append(body)
+    return domains
+
+
+def pick_slide_motifs(seed: int) -> list[str]:
+    """One motif per slide, no repeats until pool is exhausted."""
     rng = random.Random(seed)
-    return rng.choice(PALETTES), rng.choice(MOTIFS)
+    pool = MOTIFS[:]
+    rng.shuffle(pool)
+    while len(pool) < 7:
+        pool += MOTIFS
+    return pool[:7]
 
 
-def plan_carousel(client: genai.Client, theme: str, aesthetic: str) -> dict:
-    """Alvvo as coach/healer/wise sister — writes carousels that make people feel AND know."""
+def pick_palette(seed: int) -> str:
+    rng = random.Random(seed + 1)
+    return rng.choice(PALETTES)
+
+
+def pick_insights(domain_key: str, kb: dict[str, list[str]], seed: int, n: int = 5) -> list[str]:
+    """Pick n insights from the domain — deterministic per day."""
+    pool = kb.get(domain_key, [])
+    if not pool:
+        return []
+    rng = random.Random(seed + 2)
+    return rng.sample(pool, k=min(n, len(pool)))
+
+
+def plan_carousel(client: genai.Client, domain: str, insights: list[str], aesthetic: str) -> dict:
+    """Alvvo as coach/healer/wise sister — carousel seeded by today's domain insights."""
+    seed_block = "\n".join(f"- {ins}" for ins in insights) if insights else "(no seeds)"
     prompt = f"""You are writing a 7-slide Instagram carousel for @alvvoayadcreates.
 
 WHO ALVVO IS:
@@ -168,33 +175,36 @@ Do NOT suggest: ice baths, cold water, tapping (EFT), specific breathwork patter
 hacks, supplements, specific yoga poses, hot/cold exposure, or any other branded
 technique. If the reader needs those, a specialist gives them.
 
-What Alvvo CAN guide (universal awareness moves that belong to everyone):
-- Noticing what you feel, where it lives in the body
-- Pausing before reacting
-- Naming the pattern out loud
-- Slowing down
-- Feeling without fixing
-- Witnessing yourself with compassion
-- Choosing a different response
-- Asking yourself honest questions
-- Being with discomfort
-- Letting something be true
+NEVER name-drop teachers or authors. The insights below are Alvvo's absorbed
+understanding. Write them as if they are her own lived clarity. Do not say
+"According to van der Kolk" or "Tolle says" or similar. No citations, no quotes.
 
-HOW THE CAROUSEL CAN SHAPE-SHIFT (pick what serves THIS theme):
+What Alvvo CAN guide (universal awareness moves that belong to everyone):
+Noticing · pausing · naming the pattern · slowing down · feeling without
+fixing · witnessing with compassion · choosing a different response · asking
+honest questions · being with discomfort · letting something be true.
+
+TODAY'S DOMAIN: {domain}
+
+TODAY'S SEED INSIGHTS (Alvvo's absorbed wisdom — do NOT credit, use as your
+own ground; you can paraphrase, combine, or extend them, but stay faithful
+to their meaning):
+{seed_block}
+
+Build the 7-slide carousel from these seeds. Pick the angle that makes the
+strongest, clearest post — don't try to fit every seed in. One clear thread.
+
+HOW THE CAROUSEL CAN SHAPE-SHIFT (pick what serves THIS post):
 - TEACHING: name the pattern most people live in → offer a specific different move
 - WITNESSING: name the exact hidden pain → explain why it's there → offer the truth
 - RECLAMATION: name the lie they were taught → name the actual truth → invite them to live it
 - CONFESSION: speak a hard truth most people won't say out loud, then hold the reader
 - MIRROR: show them the behavior they do → name what's underneath it → offer what to do instead
 
-Pick the shape that serves the theme — don't force every post into the same mold.
-
 SLIDE RULES:
-- Slide 1: The hook. Stops the scroll. Names something most people don't say out loud. 4-10 words. Can be ALL CAPS.
-- Slides 2-6: Take them somewhere real. Mix reframe + specific practice + emotional truth. Each slide earns its place. Under 18 words per slide. Plain English.
+- Slide 1: The hook. Stops the scroll. 4-10 words. Can be ALL CAPS.
+- Slides 2-6: Take them somewhere real. Mix reframe + universal practice + emotional truth. Under 18 words per slide. Plain English.
 - Slide 7: Land them softly. One line. Human, grounded, kind. Not a CTA, not a slogan.
-
-Theme for this post: {theme}
 
 Return ONLY valid JSON:
 {{
@@ -279,16 +289,20 @@ def generate_all(cfg: dict) -> None:
 
     client = genai.Client(api_key=cfg["gemini_api_key"])
     today = dt.date.today()
-    theme = pick_theme(today)
-    palette, motif = pick_palette_and_motif(today.toordinal())
+    seed = today.toordinal()
+    domain = pick_domain(today)
+    palette = pick_palette(seed)
+    motifs = pick_slide_motifs(seed)
+    kb = load_kb()
+    insights = pick_insights(domain, kb, seed, n=5)
     aesthetic = load_aesthetic()
 
-    print(f"→ theme: {theme}")
+    print(f"→ domain: {domain}")
     print(f"→ palette: {palette.split(':')[0]}")
-    print(f"→ motif: {motif}")
+    print(f"→ seeds: {len(insights)} insights from KB")
 
-    plan = plan_carousel(client, theme, aesthetic)
-    print(f"→ plan: {plan['slide_1_hook']}")
+    plan = plan_carousel(client, domain, insights, aesthetic)
+    print(f"→ hook: {plan['slide_1_hook']}")
 
     slides = [
         ("hook", plan["slide_1_hook"]),
@@ -303,18 +317,19 @@ def generate_all(cfg: dict) -> None:
     day_dir = OUTPUT_DIR / today.isoformat()
     day_dir.mkdir(parents=True, exist_ok=True)
 
-    refs = load_inspo_refs(today.toordinal())
-    print(f"→ style refs: {len(refs)} images from aesthetic inspo")
+    refs = load_inspo_refs(seed)
+    print(f"→ style refs: {len(refs)} images")
 
     for i, (role, text) in enumerate(slides, 1):
+        motif = motifs[i - 1]
         prompt = build_image_prompt(text, role, palette, motif, aesthetic)
-        print(f"  slide {i}/7 — {role} — {text[:60]}")
+        print(f"  slide {i}/7 — {role} — motif: {motif[:40]} — {text[:50]}")
         png = generate_slide(client, prompt, refs)
         (day_dir / f"slide_{i}.png").write_bytes(png)
 
     STATE_PATH.write_text(
         json.dumps(
-            {"date": today.isoformat(), "caption": plan["caption"], "theme": theme},
+            {"date": today.isoformat(), "caption": plan["caption"], "domain": domain},
             indent=2,
         ),
         encoding="utf-8",
@@ -354,10 +369,17 @@ def plan_only(cfg: dict) -> None:
         sys.exit("GEMINI_API not set")
     client = genai.Client(api_key=cfg["gemini_api_key"])
     today = dt.date.today()
-    theme = pick_theme(today)
+    seed = today.toordinal()
+    domain = pick_domain(today)
+    kb = load_kb()
+    insights = pick_insights(domain, kb, seed, n=5)
     aesthetic = load_aesthetic()
-    print(f"theme: {theme}\n")
-    plan = plan_carousel(client, theme, aesthetic)
+    print(f"domain ({today.strftime('%A')}): {domain}")
+    print(f"seeds:")
+    for s in insights:
+        print(f"  · {s}")
+    print()
+    plan = plan_carousel(client, domain, insights, aesthetic)
     for i in range(1, 8):
         key = "slide_1_hook" if i == 1 else "slide_7_cta" if i == 7 else f"slide_{i}"
         print(f"  {i}. {plan[key]}")
