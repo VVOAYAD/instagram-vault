@@ -97,31 +97,6 @@ def load_kb() -> dict[str, list[str]]:
     return domains
 
 
-# Composition types — pure shape/framing, no colors. Colors come from style refs.
-COMPOSITIONS = [
-    "close-up of hands holding or cradling a luminous object, sparkles around",
-    "abstract cosmic field — nebula, starburst, prismatic light rays, no figure",
-    "distant lone silhouette against a vast painted landscape",
-    "floating ornamental chrome object (heart, tribal form) with no figure",
-    "cel-shaded close-up of a face or eye, 90s anime styling",
-    "full-frame textured gradient field, blurred, dreamcore, no figure",
-    "central chrome figure standing, symmetrical, surrounded by light",
-    "overhead / top-down composition looking down on an object",
-    "soft clouds and sky with a small luminous element centered",
-    "glitching marble statue with chromatic aberration, head only",
-    "pair of reflective orbs or crystals floating, sparkle field",
-    "architectural geometric frame — arch, window, portal — with light behind",
-]
-
-
-def pick_slide_compositions(seed: int) -> list[str]:
-    """7 distinct compositions per carousel, no repeats."""
-    rng = random.Random(seed)
-    pool = COMPOSITIONS[:]
-    rng.shuffle(pool)
-    return pool[:7]
-
-
 def pick_insights(domain_key: str, kb: dict[str, list[str]], seed: int, n: int = 5) -> list[str]:
     """Pick n insights from the domain — deterministic per day."""
     pool = kb.get(domain_key, [])
@@ -195,6 +170,35 @@ SLIDE RULES:
 - Slides 2-6: Take them somewhere real. Mix reframe + universal practice + emotional truth. Under 18 words per slide. Plain English.
 - Slide 7: Land them softly. One line. Human, grounded, kind. Not a CTA, not a slogan.
 
+VISUAL DIRECTION — 7 distinct compositions:
+You are also the art director. For each of the 7 slides, invent a specific
+visual composition. Rules:
+- Each of the 7 compositions MUST be visibly different from the other 6.
+  No two angels. No two pairs of hands. No two starburst fields. Vary the
+  subject, the framing, the distance, and the shape.
+- Compositions should FEEL connected to the text of that specific slide.
+- Describe each composition in one vivid sentence (15-25 words), focused on:
+  subject + framing + mood. No colors (colors come from attached style refs).
+- Draw from the aesthetic world below. Examples of composition types to
+  consider (not a fixed list — be creative, combine, invent):
+    * close-up of hands cradling a luminous object
+    * distant silhouette against vast painted landscape
+    * floating ornate chrome ornament, no figure
+    * cel-shaded anime face close-up
+    * blurred dreamcore gradient field with small glowing focal point
+    * architectural portal/arch framing the scene
+    * overhead top-down view
+    * glitching marble statue fragment
+    * reflective orbs, crystals, or spheres floating
+    * abstract cosmic field — nebula, starburst, no figure
+    * full-body chrome figure in a specific pose
+    * close-up of a single eye, hand, or object
+- The 7 compositions as a SET should feel like a curated carousel — diverse
+  subjects, different focal distances, different moods, but one aesthetic family.
+
+AESTHETIC REFERENCE (copy the palette + texture + mood from the attached images):
+{aesthetic}
+
 Return ONLY valid JSON:
 {{
   "slide_1_hook": "the hook",
@@ -204,6 +208,13 @@ Return ONLY valid JSON:
   "slide_5": "slide 5 text",
   "slide_6": "slide 6 text",
   "slide_7_cta": "the soft landing",
+  "slide_1_composition": "one vivid sentence describing slide 1's composition",
+  "slide_2_composition": "one vivid sentence describing slide 2's composition",
+  "slide_3_composition": "one vivid sentence describing slide 3's composition",
+  "slide_4_composition": "one vivid sentence describing slide 4's composition",
+  "slide_5_composition": "one vivid sentence describing slide 5's composition",
+  "slide_6_composition": "one vivid sentence describing slide 6's composition",
+  "slide_7_composition": "one vivid sentence describing slide 7's composition",
   "caption": "Instagram caption under 220 chars. Natural human voice, like texting one friend. Zero mystical jargon. End with 3-5 hashtags on a new line."
 }}"""
     resp = client.models.generate_content(
@@ -286,7 +297,6 @@ def generate_all(cfg: dict) -> None:
     domain = pick_domain(today)
     kb = load_kb()
     insights = pick_insights(domain, kb, seed, n=5)
-    compositions = pick_slide_compositions(seed)
     aesthetic = load_aesthetic()
 
     print(f"→ domain: {domain}")
@@ -296,13 +306,13 @@ def generate_all(cfg: dict) -> None:
     print(f"→ hook: {plan['slide_1_hook']}")
 
     slides = [
-        ("hook", plan["slide_1_hook"]),
-        ("body", plan["slide_2"]),
-        ("body", plan["slide_3"]),
-        ("body", plan["slide_4"]),
-        ("body", plan["slide_5"]),
-        ("body", plan["slide_6"]),
-        ("cta", plan["slide_7_cta"]),
+        ("hook", plan["slide_1_hook"], plan["slide_1_composition"]),
+        ("body", plan["slide_2"], plan["slide_2_composition"]),
+        ("body", plan["slide_3"], plan["slide_3_composition"]),
+        ("body", plan["slide_4"], plan["slide_4_composition"]),
+        ("body", plan["slide_5"], plan["slide_5_composition"]),
+        ("body", plan["slide_6"], plan["slide_6_composition"]),
+        ("cta", plan["slide_7_cta"], plan["slide_7_composition"]),
     ]
 
     day_dir = OUTPUT_DIR / today.isoformat()
@@ -311,10 +321,9 @@ def generate_all(cfg: dict) -> None:
     refs = load_inspo_refs(seed)
     print(f"→ style refs: {len(refs)} images (driving the vibe)")
 
-    for i, (role, text) in enumerate(slides, 1):
-        composition = compositions[i - 1]
+    for i, (role, text, composition) in enumerate(slides, 1):
         prompt = build_image_prompt(text, role, composition, aesthetic)
-        print(f"  slide {i}/7 — {role} — {composition[:50]} — {text[:40]}")
+        print(f"  slide {i}/7 — {role} — {composition[:60]}")
         png = generate_slide(client, prompt, refs)
         (day_dir / f"slide_{i}.png").write_bytes(png)
 
@@ -373,7 +382,10 @@ def plan_only(cfg: dict) -> None:
     plan = plan_carousel(client, domain, insights, aesthetic)
     for i in range(1, 8):
         key = "slide_1_hook" if i == 1 else "slide_7_cta" if i == 7 else f"slide_{i}"
+        comp = plan.get(f"slide_{i}_composition", "")
         print(f"  {i}. {plan[key]}")
+        if comp:
+            print(f"     [visual: {comp}]")
     print(f"\ncaption:\n{plan['caption']}")
 
 
