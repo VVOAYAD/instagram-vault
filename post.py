@@ -52,27 +52,6 @@ DOMAINS = [
     "Becoming & integration",         # Sunday
 ]
 
-PALETTES = [
-    "chrome_navy: liquid silver figures on deep navy starfield, pink+gold glitter stars",
-    "electric_airbrush: electric blue + saturated red, high-gloss airbrush, chrome highlights",
-    "y2k_romance: pastel pink, chrome silver, sky blue with clouds, heart motifs",
-    "dreamcore_blur: magenta and acid green, soft blurred gradient, heavy grain",
-    "celestial_warmth: amber, violet, starburst white, painterly sky",
-    "retro_anime: jewel tones, gold sparkle, cel-shaded 90s anime",
-]
-
-MOTIFS = [
-    "chrome liquid metal figure with luminous halo",
-    "tribal chrome ornament floating in sky with clouds",
-    "metallic angel with glowing wings, mountains far below",
-    "4-point sparkles and prismatic lens flares across the frame",
-    "starburst explosion at center with nebula backdrop",
-    "90s cel-shaded anime hands holding glowing objects",
-    "lone silhouette in vast painted landscape",
-    "glitching marble statue with chromatic aberration",
-]
-
-
 def load_config() -> dict:
     with open(CONFIG_PATH, "r", encoding="utf-8") as f:
         cfg = json.load(f)
@@ -116,21 +95,6 @@ def load_kb() -> dict[str, list[str]]:
             if body:
                 domains[current].append(body)
     return domains
-
-
-def pick_slide_motifs(seed: int) -> list[str]:
-    """One motif per slide, no repeats until pool is exhausted."""
-    rng = random.Random(seed)
-    pool = MOTIFS[:]
-    rng.shuffle(pool)
-    while len(pool) < 7:
-        pool += MOTIFS
-    return pool[:7]
-
-
-def pick_palette(seed: int) -> str:
-    rng = random.Random(seed + 1)
-    return rng.choice(PALETTES)
 
 
 def pick_insights(domain_key: str, kb: dict[str, list[str]], seed: int, n: int = 5) -> list[str]:
@@ -228,7 +192,7 @@ Return ONLY valid JSON:
     return json.loads(resp.text)
 
 
-def build_image_prompt(slide_text: str, role: str, palette: str, motif: str, aesthetic: str) -> str:
+def build_image_prompt(slide_text: str, role: str, aesthetic: str) -> str:
     role_hints = {
         "hook": "text rendered as ALL CAPS, wide letter-spacing, chrome or gold fill, subtle glow, dominant focal point",
         "body": "text rendered as italic serif (Cormorant-style), soft, romantic, lower third of frame, small relative to art",
@@ -236,16 +200,17 @@ def build_image_prompt(slide_text: str, role: str, palette: str, motif: str, aes
     }
     return f"""{aesthetic}
 
-Generate a 4:5 vertical (1080x1350) Instagram carousel slide.
+The reference images attached show the exact visual vibe — match their palette,
+composition, texture, and mood. Draw from the same world they live in.
 
-PALETTE: {palette}
-MOTIF: {motif}
+Generate a 4:5 vertical (1080x1350) Instagram carousel slide in that visual world.
+
 TEXT TO RENDER INSIDE THE IMAGE (exact wording, no changes, no extra text): "{slide_text}"
 TEXT STYLE: {role_hints[role]}
 
 The text must be integrated into the artwork — same grain, same lighting, same
 painted texture. NOT a clean overlay. NOT photorealistic. Painted, illustrated,
-grainy, Y2K chrome-core, cosmic dreamcore mood."""
+grainy, cohesive with the reference images."""
 
 
 def load_inspo_refs(seed: int) -> list[types.Part]:
@@ -291,14 +256,11 @@ def generate_all(cfg: dict) -> None:
     today = dt.date.today()
     seed = today.toordinal()
     domain = pick_domain(today)
-    palette = pick_palette(seed)
-    motifs = pick_slide_motifs(seed)
     kb = load_kb()
     insights = pick_insights(domain, kb, seed, n=5)
     aesthetic = load_aesthetic()
 
     print(f"→ domain: {domain}")
-    print(f"→ palette: {palette.split(':')[0]}")
     print(f"→ seeds: {len(insights)} insights from KB")
 
     plan = plan_carousel(client, domain, insights, aesthetic)
@@ -318,12 +280,11 @@ def generate_all(cfg: dict) -> None:
     day_dir.mkdir(parents=True, exist_ok=True)
 
     refs = load_inspo_refs(seed)
-    print(f"→ style refs: {len(refs)} images")
+    print(f"→ style refs: {len(refs)} images (driving the vibe)")
 
     for i, (role, text) in enumerate(slides, 1):
-        motif = motifs[i - 1]
-        prompt = build_image_prompt(text, role, palette, motif, aesthetic)
-        print(f"  slide {i}/7 — {role} — motif: {motif[:40]} — {text[:50]}")
+        prompt = build_image_prompt(text, role, aesthetic)
+        print(f"  slide {i}/7 — {role} — {text[:60]}")
         png = generate_slide(client, prompt, refs)
         (day_dir / f"slide_{i}.png").write_bytes(png)
 
