@@ -1,95 +1,71 @@
-# Claude — Project Context
+# Instagram Automation — @alvvoayadcreates
 
-## Who I am
-Non-technical content creator. Consciousness, nervous system reprogramming, human transformation. I call my insights "downloads and reflections." I post to Instagram as @alvvoayadcreates.
+## What this is
+Fully automated 7-slide carousel pipeline. Posts daily at 9am UTC.
+GitHub: https://github.com/VVOAYAD/instagram-vault
 
-My philosophy: never explain the tree. Transmit. Transfer with feeling, not information.
-
-## How to work with me
-- Give me direct orders, I don't need hand-holding
-- I'm not technical — explain things simply when needed
-- I work across multiple projects
-
-## My Brain vault (second brain)
-Location: `C:\Users\Administrator\Brain\`
-Synced via: Obsidian Sync (across all devices including iPhone)
-
-**At the start of every session: read the Brain vault to get full context.**
-The vault contains notes on all projects, journal entries, philosophy, and downloads.
-
-Structure:
-- `Brain/Home.md` — start here for overview
-- `Brain/Projects/` — notes on each project
-- `Brain/Downloads/` — spiritual downloads queued for Instagram
-- `Brain/Journal/` — private writing
-- `Brain/Resources/My Voice and Philosophy.md` — voice, style, philosophy
-
-> Note: Claude reads local files only. Brain vault is synced from Obsidian cloud to local machine
-> automatically when Obsidian is open. Open Obsidian before starting a Claude session if notes
-> were added from phone.
-
-## My projects
-
-### 1. Instagram Automation (LIVE)
-Fully automated 7-slide carousel pipeline. Posts daily at 9am UTC to @alvvoayadcreates.
-- Code: `C:\Users\Administrator\instagram_system\`
-- GitHub: https://github.com/VVOAYAD/instagram-vault
+## Key IDs
 - Instagram User ID: 17841472919301425
 - Facebook Page ID: 1095552560298097
 - Meta App ID: 866371822870634
-- To trigger manually: `gh workflow run "Daily Instagram Post" --repo VVOAYAD/instagram-vault`
-- Token renewal due: ~late May 2026
+- IG token renewal due: late May 2026
 
-### 2. SQU Financial Dashboard
-GitHub: https://github.com/VVOAYAD/squ-financial-dashboard
-
-### 3. Oman Lifestyle Hub
-In progress. GitHub: https://github.com/VVOAYAD/oman-lifestyle-hub
-
-## Instagram automation — key files
+## Key files (lean stack)
 | File | What it does |
 |---|---|
-| `instagram_system/Downloads/` | Notes for Instagram — one .md file = one post |
-| `instagram_system/config.json` | Voice, style, post time, handle |
-| `instagram_system/pipeline.py` | The automation engine |
-| `instagram_system/carousel_maker.py` | Builds the 7 slides |
-| `instagram_system/.github/workflows/daily_post.yml` | Schedule (cron: 9am UTC) |
+| `post.py` | The whole pipeline — generate / post / plan |
+| `aesthetic.md` | Locked visual DNA (palettes, motifs, typography) |
+| `style_refs/` | 34 inspo images, 6 fed to nano-banana per slide for style consistency |
+| `config.json` | Handle, post time (secrets live in GitHub Secrets, not here) |
+| `instagram.py` | Meta Graph API poster |
+| `.github/workflows/daily_post.yml` | Cron at 9am UTC |
 
-## Visual aesthetic (LOCKED per pattern — "simple and plain ain't me")
+## Model
+- Image: **Gemini 3.1 Flash Image Preview (Nano Banana 2)** — text baked inside the art
+- Text plan: **Gemini 2.5 Flash** — free tier is enough
 
-**Alien Affirmation:** illustrated/collage green alien, deep navy starfield, pink+gold glitter stars, NOT photorealistic, painted texture
-**Cosmic Duality:** glitching neo-classical marble statue + Greek columns + dark ocean + pink/magenta reflection + chromatic aberration neon shards — vaporwave meets ancient Greece
-**Vibrational Anchor:** retro-surrealist dreamcore illustration, lone silhouette, amber-violet painted sky, film grain
-**Gap:** dark void, painterly luminous light dissolving through space
-**Anime Meme:** retro 90s anime illustration, jewel tones, cel-shaded, VHS grain
+## Trigger manually
+```
+export PATH="$PATH:/c/Program Files/GitHub CLI"
+gh workflow run "Daily Instagram Post" --repo VVOAYAD/instagram-vault
+```
 
-Text on Alien Affirmation slides: ALL CAPS with wide letter tracking (spaces between each char)
+## Test tone locally (FREE — text only, no image cost)
+```
+PYTHONIOENCODING=utf-8 GEMINI_API="your_key" python post.py --plan
+```
 
-## Carousel patterns (rotate automatically — 6 total)
-1. The Gap — slow, expansive, deepens into the body
-2. The Cosmic Duality — single words across 4 slides → devastating sentence
-3. The Vibrational Anchor — direct, grounding, rhythmic
-4. The Alien Affirmation — full image, ALL CAPS tracked text, one affirmation per slide
-5. The Anime Meme — full image, centered subtitle-style caption per slide
-6. The Scripture Card — ornate border frame, sacred concept header, 7 reflections
+## Rules
+- Repo must stay Public — Instagram fetches images from raw.githubusercontent.com
+- Never commit API keys. Secrets live in GitHub Actions Secrets only.
+- IG access token expires every 60 days — next due late May 2026
 
-## Pattern references (auto-learning system)
-Folder: `instagram_system/pattern_references/`
-- Drop screenshots of posts you like into this folder
-- Run `python learn_pattern.py` to add them to the rotation
-- Learned patterns live in `learned_patterns.json`
-- At start of session: check if new images are in pattern_references/ that haven't been processed yet
+## Voice
+Wise older sister / coach. Warm, direct, human. Teaches by naming patterns + offering awareness. No mystical jargon ("vessel", "frequency", "portal" are banned). No invented techniques (ice, tapping, breathwork methods — Alvvo doesn't teach those). Only universal awareness moves: notice, pause, feel, witness, name, slow down.
 
-## GitHub CLI
-Installed at: `/c/Program Files/GitHub CLI/gh`
-Always use: `export PATH="$PATH:/c/Program Files/GitHub CLI"`
-Authenticated as: VVOAYAD
+## Themes (30, rotating by day of year)
+philosophy · nervous system · patterns & habits · people-pleasing & boundaries · overthinking · self-worth · sovereignty & business · growth · shadow & trauma
 
-## Python
-Located at: `C:\Users\Administrator\AppData\Local\Programs\Python\Python312\python.exe`
-Not on PATH — use full path for local runs
+## Cost
+~$0.35–0.70 per carousel, ~$10–15/month daily. Gemini API billing enabled, $5 budget alert set.
 
-## Important rules
-- Instagram token expires every 60 days — next due late May 2026
-- Repo must stay Public (Instagram fetches carousel images from raw.githubusercontent.com)
-- Downloads/ notes get auto-posted. Journal/ notes never do.
+## Improvements
+*(add your ideas here)*
+
+## Last session — 2026-04-15
+- FULL REBUILD. Deleted ~17 bloat files, 4 dirs. One pipeline: `post.py`.
+- Switched image gen to Nano Banana 2 → text baked into art, no more PIL overlays.
+- Built `aesthetic.md` + copied 34 inspo images to `style_refs/` (fed to model per slide).
+- Dialed voice: wise sister coach, no mystical jargon, no invented techniques.
+- Expanded themes from 8 to 30 (practical growth topics, not just philosophy).
+- Added `--plan` mode for free tone-testing.
+- Billing enabled on Gemini API, $5 budget alert set.
+- First live generate ran clean. Aesthetic + voice both locked.
+
+## Next step
+- Monitor first few daily auto-posts in IG feed — check how nano-banana text reads on mobile
+- If visual variety needs a boost, add pattern rotation (The Gap / The Descent / The Mirror)
+- Add new themes anytime by editing the THEMES list in `post.py`
+
+---
+*Update "Last session" and "Next step" above at the end of every session.*

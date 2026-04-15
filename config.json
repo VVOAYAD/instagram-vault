@@ -1,25 +1,8 @@
 {
-  "anthropic_api_key": "",
-  "replicate_api_token": "",
-  "instagram_user_id": "",
-  "instagram_access_token": "",
-
   "instagram_handle": "@alvvoayadcreates",
-
   "post_time_utc": "09:00",
 
-  "voice": "Deep, precise, and transmission-based. Speaks from the body, not the mind. Short sentences. No filler. Each word earns its place. Talks about the nervous system, conditioning, beliefs, consciousness, regulation, and reprogramming — but from felt experience, never from textbooks. The reader finishes a post and feels something shift, not just thinks something new.",
-
-  "visual_style": "Dark and minimal. Near-black backgrounds (#0D0D0D or deep navy). Warm cream or soft white text (#F0EBE0). Thin gold/amber accent lines. Clean serif typography — Georgia or similar. No clutter. The image breathes. Consciousness-themed Midjourney imagery: abstract nervous system patterns, dark water, fractals, neural light threads, deep space, shadows and light, minimal human silhouettes.",
-
-  "philosophy": "Never explain the tree. Never post branches. Each piece carries the full feeling on its own. Find the engine, express it in different forms. Transfer with absolute feeling, not stop-scrolls. The goal is not to inform — it is to shift.",
-
-  "image_style": {
-    "background": "#0D0D0D",
-    "text_color": "#F0EBE0",
-    "accent_color": "#9B7D52",
-    "size": [1080, 1080]
-  },
-
-  "midjourney_base_style": "dark minimalism, ethereal atmosphere, consciousness and nervous system themes, deep blacks and subtle light, abstract and symbolic, no text in image, cinematic quality, editorial --v 6.1 --style raw"
+  "gemini_api_key": "",
+  "instagram_user_id": "",
+  "instagram_access_token": ""
 }
