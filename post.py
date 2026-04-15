@@ -97,6 +97,31 @@ def load_kb() -> dict[str, list[str]]:
     return domains
 
 
+# Composition types — pure shape/framing, no colors. Colors come from style refs.
+COMPOSITIONS = [
+    "close-up of hands holding or cradling a luminous object, sparkles around",
+    "abstract cosmic field — nebula, starburst, prismatic light rays, no figure",
+    "distant lone silhouette against a vast painted landscape",
+    "floating ornamental chrome object (heart, tribal form) with no figure",
+    "cel-shaded close-up of a face or eye, 90s anime styling",
+    "full-frame textured gradient field, blurred, dreamcore, no figure",
+    "central chrome figure standing, symmetrical, surrounded by light",
+    "overhead / top-down composition looking down on an object",
+    "soft clouds and sky with a small luminous element centered",
+    "glitching marble statue with chromatic aberration, head only",
+    "pair of reflective orbs or crystals floating, sparkle field",
+    "architectural geometric frame — arch, window, portal — with light behind",
+]
+
+
+def pick_slide_compositions(seed: int) -> list[str]:
+    """7 distinct compositions per carousel, no repeats."""
+    rng = random.Random(seed)
+    pool = COMPOSITIONS[:]
+    rng.shuffle(pool)
+    return pool[:7]
+
+
 def pick_insights(domain_key: str, kb: dict[str, list[str]], seed: int, n: int = 5) -> list[str]:
     """Pick n insights from the domain — deterministic per day."""
     pool = kb.get(domain_key, [])
@@ -192,7 +217,7 @@ Return ONLY valid JSON:
     return json.loads(resp.text)
 
 
-def build_image_prompt(slide_text: str, role: str, aesthetic: str) -> str:
+def build_image_prompt(slide_text: str, role: str, composition: str, aesthetic: str) -> str:
     role_hints = {
         "hook": "text rendered as ALL CAPS, wide letter-spacing, chrome or gold fill, subtle glow, dominant focal point",
         "body": "text rendered as italic serif (Cormorant-style), soft, romantic, lower third of frame, small relative to art",
@@ -201,9 +226,12 @@ def build_image_prompt(slide_text: str, role: str, aesthetic: str) -> str:
     return f"""{aesthetic}
 
 The reference images attached show the exact visual vibe — match their palette,
-composition, texture, and mood. Draw from the same world they live in.
+texture, mood, and lighting. Draw from the same world they live in.
 
 Generate a 4:5 vertical (1080x1350) Instagram carousel slide in that visual world.
+
+COMPOSITION FOR THIS SLIDE: {composition}
+(Use this composition, not the same setup as a generic chrome-angel shot.)
 
 TEXT TO RENDER INSIDE THE IMAGE (exact wording, no changes, no extra text): "{slide_text}"
 TEXT STYLE: {role_hints[role]}
@@ -258,6 +286,7 @@ def generate_all(cfg: dict) -> None:
     domain = pick_domain(today)
     kb = load_kb()
     insights = pick_insights(domain, kb, seed, n=5)
+    compositions = pick_slide_compositions(seed)
     aesthetic = load_aesthetic()
 
     print(f"→ domain: {domain}")
@@ -283,8 +312,9 @@ def generate_all(cfg: dict) -> None:
     print(f"→ style refs: {len(refs)} images (driving the vibe)")
 
     for i, (role, text) in enumerate(slides, 1):
-        prompt = build_image_prompt(text, role, aesthetic)
-        print(f"  slide {i}/7 — {role} — {text[:60]}")
+        composition = compositions[i - 1]
+        prompt = build_image_prompt(text, role, composition, aesthetic)
+        print(f"  slide {i}/7 — {role} — {composition[:50]} — {text[:40]}")
         png = generate_slide(client, prompt, refs)
         (day_dir / f"slide_{i}.png").write_bytes(png)
 
