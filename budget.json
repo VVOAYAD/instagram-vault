@@ -1,13 +1,19 @@
 {
   "topped_up_total": 10.0,
-  "spent_total": 0.27,
+  "spent_total": 0.544,
   "runs": [
     {
       "date": "2026-04-26",
       "domain": "Becoming & integration",
       "cost": 0.27,
       "images": 7,
-      "note": "first run after credit top-up — Sunday slop, replaced by upgraded run"
+      "note": "first run after credit top-up \u2014 Sunday slop, replaced by upgraded run"
+    },
+    {
+      "date": "2026-04-26",
+      "domain": "Becoming & integration",
+      "cost": 0.274,
+      "images": 7
     }
   ],
   "topups": [
