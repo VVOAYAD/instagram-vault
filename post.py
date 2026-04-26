@@ -429,6 +429,19 @@ def generate_all(cfg: dict) -> None:
         png = generate_slide(client, prompt, refs)
         (day_dir / f"slide_{i}.png").write_bytes(png)
 
+    plan_record = {
+        "date": today.isoformat(),
+        "domain": domain,
+        "seeds": insights,
+        "slides": [
+            {"i": idx, "role": role, "text": text, "composition": composition}
+            for idx, (role, text, composition) in enumerate(slides, 1)
+        ],
+        "caption": plan["caption"],
+    }
+    (day_dir / "plan.json").write_text(
+        json.dumps(plan_record, indent=2, ensure_ascii=False), encoding="utf-8"
+    )
     STATE_PATH.write_text(
         json.dumps(
             {"date": today.isoformat(), "caption": plan["caption"], "domain": domain},
@@ -436,7 +449,7 @@ def generate_all(cfg: dict) -> None:
         ),
         encoding="utf-8",
     )
-    print(f"✓ 7 slides saved to {day_dir}")
+    print(f"✓ 7 slides + plan.json saved to {day_dir}")
 
     log_run_cost(today.isoformat(), domain, image_count=7, plan_calls=1)
 
