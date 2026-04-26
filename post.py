@@ -34,14 +34,14 @@ OUTPUT_DIR = ROOT / "output"
 STATE_PATH = ROOT / ".last_post.json"
 BUDGET_PATH = ROOT / "budget.json"
 
-COST_PER_IMAGE = 0.039  # Gemini 3 Flash Image (Nano Banana 2) per output image
+COST_PER_IMAGE = 0.020  # Gemini 2.5 Flash Image (Nano Banana 1) per output image
 COST_PER_PLAN = 0.001   # Gemini 2.5 Flash plan call (~5k tokens, conservative)
 LOW_BALANCE_THRESHOLD = 1.00  # auto-pause if remaining < $1
 
 GITHUB_REPO = "VVOAYAD/instagram-vault"
 GITHUB_BRANCH = "main"
 
-IMAGE_MODEL = "gemini-3.1-flash-image-preview"  # Nano Banana 2
+IMAGE_MODEL = "gemini-2.5-flash-image"  # Nano Banana 1 — ~50% cheaper than NB2, slight quality tradeoff
 TEXT_MODEL = "gemini-2.5-flash"
 INSPO_DIR = ROOT / "style_refs"
 INSPO_COUNT = 6  # reference images sent with every slide call (max 14)
