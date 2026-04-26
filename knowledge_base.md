@@ -220,33 +220,34 @@ grounding · clearing · the subtle body · field sensitivity
 
 ## SUNDAY — Becoming & integration
 
-**Sub-themes:** weekly close · living the work · integration · self-trust ·
-the long game · permission · identity shedding · the quiet revolution
+**Sub-themes:** transitions · individuation · shadow integration · adult
+development · the neutral zone · self-authoring · nervous-system rewrite ·
+return phase · groundlessness · identity death
 
 **Insights:**
 
-1. [universal] This week you held things no one saw. That counts.
-2. [universal] Becoming is not loud. It happens in tiny choices no one is watching.
-3. [universal] You don't have to have it figured out. You have to keep choosing yourself anyway.
-4. [universal] Growth isn't a feeling. It's a direction.
-5. [universal] The version of you that was dying this week was supposed to.
-6. [universal] You can rest without earning it. That's the whole point.
-7. [universal] Integration is not finishing something. It's living with what you learned.
-8. [universal] You don't need to prove you've changed. You can just live as the one who has.
-9. [universal] The things that felt impossible six months ago are your new baseline. Let that count.
-10. [universal] You are allowed to move slowly. You are allowed to stop performing progress.
-11. [universal] Healing isn't a destination. It's the pace at which you stop betraying yourself.
-12. [universal] You don't need to explain the version of you that's emerging.
-13. [universal] Your clarity may scare people. That's information, not a problem.
-14. [universal] The old version of you keeps dying. Stop trying to save her.
-15. [universal] You don't owe the old life your loyalty.
-16. [universal] Some weeks you integrate. Some weeks you just survive. Both are becoming.
-17. [universal] The work is lifelong. So is the reward.
-18. [universal] You can love yourself and still be growing. The two are the same practice.
-19. [universal] Self-trust is the quiet revolution no one will clap for.
-20. [universal] You are not late. You are exactly where the path wanted you.
-21. [universal] Consistency isn't glamorous. It's everything.
-22. [universal] Some days the teaching is: just don't abandon yourself today.
-23. [universal] You are not becoming someone else. You are becoming who you already are.
-24. [universal] The gentler you are with yourself, the faster the becoming.
-25. [universal] One more breath. One more day. One more quiet choice. That's the whole thing.
+1. [Bridges | transition-neutral-zone] The space between who you were and who you're becoming has a name — the neutral zone. Most people try to skip it and stay stuck.
+2. [Kegan | subject-to-object] Growth feels disorienting because what used to run you is now something you can see. You're meeting yourself for the first time.
+3. [Jung | persona-shedding] When the old identity dies, grief is the right response — even if the old version was hurting you.
+4. [van der Kolk | integration-after-trauma] Every time you act from the new pattern instead of the old one, you're rewriting the body's expectation of what's safe.
+5. [Pema | groundlessness] The discomfort of not knowing who you are yet isn't a problem. It's the texture of becoming.
+6. [Campbell | return-with-elixir] The hardest part of the hero's journey isn't the descent. It's coming back changed and being asked to live as if you're not.
+7. [Whyte | threshold-time] Thresholds run on soul time, not calendar time. You can't rush integration without losing the lesson.
+8. [Bridges | endings-must-be-grieved] Every transition begins with an ending. Skip the grief and the new beginning never lands.
+9. [Jung | individuation] Individuation isn't becoming someone new. It's reclaiming the parts of you that were exiled to keep the family system intact.
+10. [Siegel | integration-as-differentiation] Integration isn't sameness. It's letting different parts of you stay distinct and still belong to the same whole.
+11. [Brach | RAIN-non-identification] After noticing, allowing, investigating — the final move is non-identification. You stop being the wound and start having one.
+12. [Schwartz | Self-leadership] When the parts that used to drive you sit down, the Self that was always underneath finally drives.
+13. [Jung | shadow-integration] The traits you spent years hiding often return as the strengths the new version of you needs.
+14. [Kegan | self-authoring] At some point you stop borrowing your worth from outside opinions and start authoring it yourself. That's a developmental shift, not a personality trait.
+15. [Whyte | the-honest-step] You don't need a five-year plan. You need the next honest step. The path reveals one step at a time.
+16. [Pema | bardo-state] The space between identities is uncomfortable on purpose. It's where the old dissolves before the new can arrive.
+17. [Jung | second-half-of-life] In the first half of life we build the persona. In the second, we dismantle it to find what was underneath all along.
+18. [Tolle | resistance-to-change] The pain of becoming usually isn't the change itself. It's the resistance to the change.
+19. [Siegel | mindsight] Self-awareness isn't watching yourself perform. It's noticing the pattern running you, then choosing to interrupt one move.
+20. [van der Kolk | nervous-system-rewrite] The new identity doesn't land in your head first. It lands in your body, one repetition at a time.
+21. [Jung | call-and-refusal] Most people get the call to become and refuse it because the price feels too high. The price of refusing is always higher.
+22. [Bridges | new-beginning-marker] You'll know the new beginning has landed when you stop describing yourself by what you used to be.
+23. [universal | identity-coherence-lag] When inner change outpaces outer life, you'll feel disoriented. That's not failure — it's the lag closing.
+24. [universal | nervous-system-pacing] The body integrates change slower than the mind decides on it. Patience with the gap is the work.
+25. [universal | quiet-revolution] Becoming doesn't announce itself. The new version of you is being built in choices no one will ever see.

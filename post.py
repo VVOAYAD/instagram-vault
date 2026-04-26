@@ -32,6 +32,11 @@ AESTHETIC_PATH = ROOT / "aesthetic.md"
 KB_PATH = ROOT / "knowledge_base.md"
 OUTPUT_DIR = ROOT / "output"
 STATE_PATH = ROOT / ".last_post.json"
+BUDGET_PATH = ROOT / "budget.json"
+
+COST_PER_IMAGE = 0.039  # Gemini 3 Flash Image (Nano Banana 2) per output image
+COST_PER_PLAN = 0.001   # Gemini 2.5 Flash plan call (~5k tokens, conservative)
+LOW_BALANCE_THRESHOLD = 1.00  # auto-pause if remaining < $1
 
 GITHUB_REPO = "VVOAYAD/instagram-vault"
 GITHUB_BRANCH = "main"
@@ -67,20 +72,85 @@ def load_aesthetic() -> str:
     return AESTHETIC_PATH.read_text(encoding="utf-8")
 
 
+def load_budget() -> dict:
+    if not BUDGET_PATH.exists():
+        return {"topped_up_total": 0.0, "spent_total": 0.0, "runs": []}
+    return json.loads(BUDGET_PATH.read_text(encoding="utf-8"))
+
+
+def save_budget(budget: dict) -> None:
+    BUDGET_PATH.write_text(json.dumps(budget, indent=2), encoding="utf-8")
+
+
+def remaining_balance(budget: dict) -> float:
+    return budget.get("topped_up_total", 0.0) - budget.get("spent_total", 0.0)
+
+
+def check_budget_or_exit() -> None:
+    """Auto-pause the pipeline if remaining < $1."""
+    budget = load_budget()
+    remaining = remaining_balance(budget)
+    if budget.get("topped_up_total", 0.0) > 0 and remaining < LOW_BALANCE_THRESHOLD:
+        sys.exit(
+            f"AUTO-PAUSE: balance ${remaining:.2f} < threshold ${LOW_BALANCE_THRESHOLD:.2f}. "
+            f"Top up at https://aistudio.google.com/app/apikey then run "
+            f"`python post.py --topup <amount>` to record it."
+        )
+
+
+def log_run_cost(date_iso: str, domain: str, image_count: int, plan_calls: int = 1) -> float:
+    """Record this run's cost into budget.json. Returns the cost."""
+    cost = round(image_count * COST_PER_IMAGE + plan_calls * COST_PER_PLAN, 4)
+    budget = load_budget()
+    budget["spent_total"] = round(budget.get("spent_total", 0.0) + cost, 4)
+    budget.setdefault("runs", []).append(
+        {"date": date_iso, "domain": domain, "cost": cost, "images": image_count}
+    )
+    save_budget(budget)
+    remaining = remaining_balance(budget)
+    print(
+        f"→ post cost: ${cost:.2f} | spent total: ${budget['spent_total']:.2f} "
+        f"| est remaining: ${remaining:.2f}"
+    )
+    if budget.get("topped_up_total", 0.0) > 0 and remaining < LOW_BALANCE_THRESHOLD:
+        print(
+            f"⚠️  LOW BALANCE — only ${remaining:.2f} left. "
+            f"Pipeline will auto-pause on next run. Top up to keep posting."
+        )
+    return cost
+
+
+def record_topup(amount: float) -> None:
+    budget = load_budget()
+    budget["topped_up_total"] = round(budget.get("topped_up_total", 0.0) + amount, 2)
+    budget.setdefault("topups", []).append(
+        {"date": dt.date.today().isoformat(), "amount": amount}
+    )
+    save_budget(budget)
+    print(
+        f"✓ recorded ${amount:.2f} top-up. "
+        f"Topped up total: ${budget['topped_up_total']:.2f} | "
+        f"Spent: ${budget['spent_total']:.2f} | "
+        f"Remaining: ${remaining_balance(budget):.2f}"
+    )
+
+
 def pick_domain(today: dt.date) -> str:
     """Monday = DOMAINS[0], Sunday = DOMAINS[6]."""
     return DOMAINS[today.weekday()]
 
 
-def load_kb() -> dict[str, list[str]]:
-    """Parse knowledge_base.md into {domain_key: [insights...]}.
+def load_kb() -> dict[str, list[dict[str, str]]]:
+    """Parse knowledge_base.md into {domain_key: [{pattern, text}, ...]}.
 
-    Domain headers are lines like '## MONDAY — Nervous system & trauma'.
-    Insights are numbered lines '1. [tag] The insight text.'
-    Tag brackets are stripped so Gemini never sees teacher names.
+    Domain headers: '## MONDAY — Nervous system & trauma'.
+    Insights: '1. [Teacher | pattern-name] The insight text.'
+    Teacher name is stripped (never named in posts).
+    Pattern label flows to Gemini as framework context so it can
+    deepen the post around the actual lineage instead of going generic.
     """
     text = KB_PATH.read_text(encoding="utf-8")
-    domains: dict[str, list[str]] = {}
+    domains: dict[str, list[dict[str, str]]] = {}
     current: str | None = None
     for raw in text.splitlines():
         line = raw.rstrip()
@@ -90,14 +160,18 @@ def load_kb() -> dict[str, list[str]]:
             continue
         if current and line and line[0].isdigit() and ". " in line[:5]:
             body = line.split(". ", 1)[1].strip()
+            pattern = ""
             if body.startswith("[") and "]" in body:
-                body = body.split("]", 1)[1].strip()
+                tag, body = body.split("]", 1)
+                tag = tag[1:].strip()
+                body = body.strip()
+                pattern = tag.split("|", 1)[1].strip() if "|" in tag else ""
             if body:
-                domains[current].append(body)
+                domains[current].append({"pattern": pattern, "text": body})
     return domains
 
 
-def pick_insights(domain_key: str, kb: dict[str, list[str]], seed: int, n: int = 5) -> list[str]:
+def pick_insights(domain_key: str, kb: dict[str, list[dict[str, str]]], seed: int, n: int = 5) -> list[dict[str, str]]:
     """Pick n insights from the domain — deterministic per day."""
     pool = kb.get(domain_key, [])
     if not pool:
@@ -106,9 +180,15 @@ def pick_insights(domain_key: str, kb: dict[str, list[str]], seed: int, n: int =
     return rng.sample(pool, k=min(n, len(pool)))
 
 
-def plan_carousel(client: genai.Client, domain: str, insights: list[str], aesthetic: str) -> dict:
+def plan_carousel(client: genai.Client, domain: str, insights: list[dict[str, str]], aesthetic: str) -> dict:
     """Alvvo as coach/healer/wise sister — carousel seeded by today's domain insights."""
-    seed_block = "\n".join(f"- {ins}" for ins in insights) if insights else "(no seeds)"
+    if insights:
+        seed_block = "\n".join(
+            f"- (framework: {ins['pattern']}) {ins['text']}" if ins.get("pattern") else f"- {ins['text']}"
+            for ins in insights
+        )
+    else:
+        seed_block = "(no seeds)"
     prompt = f"""You are writing a 7-slide Instagram carousel for @alvvoayadcreates.
 
 WHO ALVVO IS:
@@ -133,6 +213,19 @@ NEVER USE these (they sound like AI spiritual slop):
 - Empty rhetorical questions
 - Anything a ChatGPT spiritual coach would say
 
+NEVER WRITE FORTUNE-COOKIE LINES. Forbidden patterns:
+- Vague affirmations: "you are allowed to rest", "you are exactly where you need to be",
+  "you are not late", "trust yourself", "you are becoming"
+- Pep-talk wisdom: "tiny choices count", "consistency is everything", "growth is not loud"
+- Sentimental closings: "one more breath, one more day, one more quiet choice"
+- Anything that could fit on a journal, a candle, a Pinterest tile, or a 2018 yoga studio wall.
+
+EVERY SLIDE MUST EITHER:
+(a) Name a real psychological/somatic/developmental pattern people don't have language for
+(b) Explain the mechanism of why something happens inside them
+(c) Reframe a behavior they call a flaw as the function it was actually doing
+The reader should walk away knowing one specific thing about themselves they didn't have words for before. Not a feeling. A pattern.
+
 NEVER INVENT SPECIFIC TECHNIQUES. Alvvo is NOT a somatic therapist or biohacker.
 Do NOT suggest: ice baths, cold water, tapping (EFT), specific breathwork patterns
 (4-7-8, box breathing, Wim Hof), journaling prompts, gratitude lists, vagus nerve
@@ -152,8 +245,15 @@ TODAY'S DOMAIN: {domain}
 
 TODAY'S SEED INSIGHTS (Alvvo's absorbed wisdom — do NOT credit, use as your
 own ground; you can paraphrase, combine, or extend them, but stay faithful
-to their meaning):
+to their meaning). Each seed shows a `(framework: X)` label — that is the
+real psychological/developmental concept underneath. Lean into the
+mechanism that framework names. The post must teach that mechanism, not
+gesture at it:
 {seed_block}
+
+The reader should be able to point to one paragraph in the post and say
+"that's a thing in me — and now I have a name for it." Generic encouragement
+is failure. Naming the pattern is success.
 
 Build the 7-slide carousel from these seeds. Pick the angle that makes the
 strongest, clearest post — don't try to fit every seed in. One clear thread.
@@ -291,6 +391,8 @@ def generate_all(cfg: dict) -> None:
     if not cfg["gemini_api_key"]:
         sys.exit("GEMINI_API not set")
 
+    check_budget_or_exit()
+
     client = genai.Client(api_key=cfg["gemini_api_key"])
     today = dt.date.today()
     seed = today.toordinal()
@@ -336,6 +438,8 @@ def generate_all(cfg: dict) -> None:
     )
     print(f"✓ 7 slides saved to {day_dir}")
 
+    log_run_cost(today.isoformat(), domain, image_count=7, plan_calls=1)
+
 
 def publish(cfg: dict) -> None:
     if not (cfg["instagram_user_id"] and cfg["instagram_access_token"]):
@@ -377,7 +481,8 @@ def plan_only(cfg: dict) -> None:
     print(f"domain ({today.strftime('%A')}): {domain}")
     print(f"seeds:")
     for s in insights:
-        print(f"  · {s}")
+        label = f"({s['pattern']}) " if s.get("pattern") else ""
+        print(f"  · {label}{s['text']}")
     print()
     plan = plan_carousel(client, domain, insights, aesthetic)
     for i in range(1, 8):
@@ -389,13 +494,39 @@ def plan_only(cfg: dict) -> None:
     print(f"\ncaption:\n{plan['caption']}")
 
 
+def show_budget() -> None:
+    budget = load_budget()
+    topped = budget.get("topped_up_total", 0.0)
+    spent = budget.get("spent_total", 0.0)
+    remaining = remaining_balance(budget)
+    runs = budget.get("runs", [])
+    print(f"Topped up: ${topped:.2f}")
+    print(f"Spent:     ${spent:.2f} ({len(runs)} runs)")
+    print(f"Remaining: ${remaining:.2f}")
+    if topped > 0 and remaining < LOW_BALANCE_THRESHOLD:
+        print(f"⚠️  LOW BALANCE — pipeline will auto-pause on next run.")
+    if runs:
+        print("\nLast 5 runs:")
+        for r in runs[-5:]:
+            print(f"  {r['date']}  {r['domain']:<32}  ${r['cost']:.2f}")
+
+
 def main() -> None:
     p = argparse.ArgumentParser()
     g = p.add_mutually_exclusive_group(required=True)
     g.add_argument("--generate", action="store_true")
     g.add_argument("--post", action="store_true")
     g.add_argument("--plan", action="store_true", help="text only, no images, no cost")
+    g.add_argument("--budget", action="store_true", help="show top-ups, spend, remaining")
+    g.add_argument("--topup", type=float, metavar="AMOUNT", help="record a top-up, e.g. --topup 10")
     args = p.parse_args()
+
+    if args.budget:
+        show_budget()
+        return
+    if args.topup is not None:
+        record_topup(args.topup)
+        return
 
     cfg = load_config()
     if args.generate:
