@@ -1,6 +1,6 @@
 {
   "topped_up_total": 10.0,
-  "spent_total": 0.685,
+  "spent_total": 0.826,
   "runs": [
     {
       "date": "2026-04-26",
@@ -18,6 +18,12 @@
     {
       "date": "2026-04-27",
       "domain": "Nervous system & trauma",
+      "cost": 0.141,
+      "images": 7
+    },
+    {
+      "date": "2026-04-28",
+      "domain": "Consciousness & presence",
       "cost": 0.141,
       "images": 7
     }
