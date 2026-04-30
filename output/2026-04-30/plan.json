@@ -1,0 +1,71 @@
+{
+  "date": "2026-04-30",
+  "domain": "Embodiment",
+  "seeds": [
+    {
+      "pattern": "hustle-as-flight",
+      "text": "Your tiredness is honest. Your hustle isn't. Most \"productivity\" is a flight response with better marketing."
+    },
+    {
+      "pattern": "slowness-as-resistance",
+      "text": "Slowing down is resistance in a body trained to perform. Speed isn't your nature — it was the price of belonging."
+    },
+    {
+      "pattern": "embodied-not-comfortable",
+      "text": "Being embodied isn't feeling good. It's feeling what's actually here — including the parts that aren't pleasant."
+    },
+    {
+      "pattern": "body-as-memory-keeper",
+      "text": "Your body isn't a machine. It's a memory keeper — every tight place is an old story still waiting to be heard."
+    },
+    {
+      "pattern": "breath-as-anchor",
+      "text": "The breath is always available. That's why it's the simplest doorway back into your own body."
+    }
+  ],
+  "slides": [
+    {
+      "i": 1,
+      "role": "hook",
+      "text": "YOUR HUSTLE ISN'T PRODUCTIVITY. IT'S FLIGHT.",
+      "composition": "A shimmering, liquid chrome hourglass, half-empty, stands centrally against a deep navy cosmic backdrop, conveying urgency and metallic elegance."
+    },
+    {
+      "i": 2,
+      "role": "body",
+      "text": "That constant push to do more? Often, it's just your body trying to outrun what's hard.",
+      "composition": "A lone, cel-shaded anime figure, seen from behind, runs endlessly through a blurred dreamcore landscape under a sky filled with prismatic light, evoking tireless escape."
+    },
+    {
+      "i": 3,
+      "role": "body",
+      "text": "When you try to slow down, your system might fight back. It learned speed was survival.",
+      "composition": "Two chrome hands, one clenched and one gently open, are framed in a close-up against a textured, slow-motion starfield, symbolizing resistance and release."
+    },
+    {
+      "i": 4,
+      "role": "body",
+      "text": "Every tight knot or ache holds a quiet story. Your body remembers what your mind forgot.",
+      "composition": "An ancient, glitching marble statue fragment, depicting a torso with intricate cracks, floats within an beautiful amber and violet painterly sky, suggesting forgotten narratives held within."
+    },
+    {
+      "i": 5,
+      "role": "body",
+      "text": "Embodiment isn't about feeling good. It's about feeling what's here, without needing to fix it.",
+      "composition": "A single, luminous metallic tear drops slowly from an unseen source into a still, reflective pool, creating subtle ripples under a soft glow, symbolizing honest feeling."
+    },
+    {
+      "i": 6,
+      "role": "body",
+      "text": "When everything feels too much, your breath is always waiting. A simple, quiet doorway in.",
+      "composition": "A soft, glowing, four-point sparkle hovers at the center of a wide-angle shot of a vast, tranquil nebula, feeling like a quiet, accessible anchor point."
+    },
+    {
+      "i": 7,
+      "role": "cta",
+      "text": "Your body is telling you the truth. Listen.",
+      "composition": "An architectural portal, crafted from flowing chrome, frames a distant, serene, cloud-filled sky, inviting a contemplative and expansive mood."
+    }
+  ],
+  "caption": "That constant urge to GO and DO? What if it's less about growth, and more about avoiding what's actually here? Your body remembers everything. What if we just listened?\n#embodiment #nervoussystem #slowdown #innerwisdom"
+}
