@@ -1,0 +1,71 @@
+{
+  "date": "2026-05-01",
+  "domain": "Philosophy & wisdom",
+  "seeds": [
+    {
+      "pattern": "becoming-the-path",
+      "text": "You don't find the path. You become it. There's no separate road — only the one your living shapes."
+    },
+    {
+      "pattern": "non-separation",
+      "text": "You are the world, and the world is you. The line between inner and outer is psychological, not real."
+    },
+    {
+      "pattern": "wound-as-aperture",
+      "text": "The wound is where the light enters. The places that broke open are the same places that became permeable to grace."
+    },
+    {
+      "pattern": "yielding-strength",
+      "text": "The softest things overcome the hardest. Yielding isn't weakness — it's a different kind of force."
+    },
+    {
+      "pattern": "endings-as-thresholds",
+      "text": "Every ending is the shape of the next beginning. Same door, different side."
+    }
+  ],
+  "slides": [
+    {
+      "i": 1,
+      "role": "hook",
+      "text": "YOU'RE WAITING FOR A MAP.",
+      "composition": "A shimmering, unfurled scroll of liquid chrome metal, subtly reflecting a starfield, filling the frame with ethereal glow."
+    },
+    {
+      "i": 2,
+      "role": "body",
+      "text": "The path isn't ahead. It’s beneath your feet, forming with every single step.",
+      "composition": "An overhead view of a single chrome foot stepping onto shifting, pearlescent ground, radiating soft light outwards."
+    },
+    {
+      "i": 3,
+      "role": "body",
+      "text": "Every true ending is not a wall, but a threshold. Same door, just a new world.",
+      "composition": "A monumental, ornate chrome archway, slightly glitching, frames a vast, painterly amber-violet cosmic landscape beyond."
+    },
+    {
+      "i": 4,
+      "role": "body",
+      "text": "And the places that broke open? Those are your apertures. Where the deep light gets in.",
+      "composition": "A fractured, luminous crystal shard, emitting a prismatic rainbow burst, cradled gently by two cel-shaded anime hands."
+    },
+    {
+      "i": 5,
+      "role": "body",
+      "text": "True strength isn't pushing. It’s the quiet art of letting life shape you.",
+      "composition": "A chrome liquid-metal figure, full-body in a soft, yielding pose, dissolving slightly into a deep navy dreamcore gradient."
+    },
+    {
+      "i": 6,
+      "role": "body",
+      "text": "You're not finding a way. You're becoming the way. Your own unique, unrepeatable path.",
+      "composition": "A close-up of a human eye, iris reflecting a swirling nebula, with subtle VHS lines and a tiny 4-point sparkle."
+    },
+    {
+      "i": 7,
+      "role": "cta",
+      "text": "There's no wrong way to walk home.",
+      "composition": "A distant silhouette of a lone figure on a winding, chrome path, against a vast, soft pastel sky with glowing clouds."
+    }
+  ],
+  "caption": "For anyone feeling lost on the path, or wondering where the map is. What if the map is you, unfolding?\n#alvvo #wisdom #lifesjourney #innercompass #unfold"
+}
