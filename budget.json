@@ -1,6 +1,6 @@
 {
   "topped_up_total": 10.0,
-  "spent_total": 1.39,
+  "spent_total": 1.531,
   "runs": [
     {
       "date": "2026-04-26",
@@ -48,6 +48,12 @@
     {
       "date": "2026-05-02",
       "domain": "Energy & reiki",
+      "cost": 0.141,
+      "images": 7
+    },
+    {
+      "date": "2026-05-03",
+      "domain": "Becoming & integration",
       "cost": 0.141,
       "images": 7
     }

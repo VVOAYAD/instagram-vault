@@ -1,0 +1,71 @@
+{
+  "date": "2026-05-03",
+  "domain": "Becoming & integration",
+  "seeds": [
+    {
+      "pattern": "persona-shedding",
+      "text": "When the old identity dies, grief is the right response — even if the old version was hurting you."
+    },
+    {
+      "pattern": "mindsight",
+      "text": "Self-awareness isn't watching yourself perform. It's noticing the pattern running you, then choosing to interrupt one move."
+    },
+    {
+      "pattern": "Self-leadership",
+      "text": "When the parts that used to drive you sit down, the Self that was always underneath finally drives."
+    },
+    {
+      "pattern": "return-with-elixir",
+      "text": "The hardest part of the hero's journey isn't the descent. It's coming back changed and being asked to live as if you're not."
+    },
+    {
+      "pattern": "the-honest-step",
+      "text": "You don't need a five-year plan. You need the next honest step. The path reveals one step at a time."
+    }
+  ],
+  "slides": [
+    {
+      "i": 1,
+      "role": "hook",
+      "text": "WHEN THE OLD SKIN SHEDS.",
+      "composition": "A shimmering, incomplete chrome chrysalis, cracked open slightly from within, bathed in soft, ethereal light, conveying delicate emergence."
+    },
+    {
+      "i": 2,
+      "role": "body",
+      "text": "You're grieving a version of yourself you had to leave behind.",
+      "composition": "A pair of stylized, cel-shaded hands gently cradling a delicate, fragmented glass orb, reflecting a mournful, wistful mood."
+    },
+    {
+      "i": 3,
+      "role": "body",
+      "text": "The world still sees the you you used to be. That gap is exhausting.",
+      "composition": "A lone, full-body chrome figure, seen from behind, gazing into a vast, misty landscape where a faint, older silhouette shimmers, evoking a sense of alienation."
+    },
+    {
+      "i": 4,
+      "role": "body",
+      "text": "So you dim yourself, trying to fit back in. A subtle self-betrayal.",
+      "composition": "A blurred dreamcore gradient field with a small, glowing light source slowly fading into shadow at the center, symbolizing internal suppression."
+    },
+    {
+      "i": 5,
+      "role": "body",
+      "text": "The next honest move isn't a grand plan. It's a quiet turning.",
+      "composition": "An overhead top-down view of a single, small, chrome-plated gear quietly rotating amidst larger, stationary, antique clockwork mechanisms, suggesting subtle internal shift."
+    },
+    {
+      "i": 6,
+      "role": "body",
+      "text": "This quiet turning is how the real you finally starts to drive.",
+      "composition": "An architectural portal archway framing a serene, star-dusted cosmic vista, with a path leading confidently through its luminous opening, conveying hopeful progression."
+    },
+    {
+      "i": 7,
+      "role": "cta",
+      "text": "Let the new truth settle into your bones.",
+      "composition": "A close-up of a single, glossy, chrome-plated hand resting peacefully on a textured, reflective surface, emanating a soft, grounded glow of acceptance."
+    }
+  ],
+  "caption": "This slow shedding. It’s a real kind of grief. You’re not broken for feeling it. Just remember, your quiet turning is the way forward. Let the real you find its footing.\n#realgrowth #innerlandscape #becomingyou #unfolding"
+}
