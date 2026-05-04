@@ -1,6 +1,6 @@
 {
   "topped_up_total": 10.0,
-  "spent_total": 1.531,
+  "spent_total": 1.672,
   "runs": [
     {
       "date": "2026-04-26",
@@ -54,6 +54,12 @@
     {
       "date": "2026-05-03",
       "domain": "Becoming & integration",
+      "cost": 0.141,
+      "images": 7
+    },
+    {
+      "date": "2026-05-04",
+      "domain": "Nervous system & trauma",
       "cost": 0.141,
       "images": 7
     }
