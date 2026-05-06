@@ -1,6 +1,6 @@
 {
   "topped_up_total": 10.0,
-  "spent_total": 1.813,
+  "spent_total": 1.954,
   "runs": [
     {
       "date": "2026-04-26",
@@ -66,6 +66,12 @@
     {
       "date": "2026-05-05",
       "domain": "Consciousness & presence",
+      "cost": 0.141,
+      "images": 7
+    },
+    {
+      "date": "2026-05-06",
+      "domain": "Shadow & self",
       "cost": 0.141,
       "images": 7
     }
