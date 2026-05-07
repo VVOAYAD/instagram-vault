@@ -1,0 +1,71 @@
+{
+  "date": "2026-05-07",
+  "domain": "Embodiment",
+  "seeds": [
+    {
+      "pattern": "body-loyalty",
+      "text": "Your body has been with you from the first breath. It's the most loyal thing you have, even when you treat it like the enemy."
+    },
+    {
+      "pattern": "home-as-felt-sense",
+      "text": "Home isn't a place. It's the felt sense of being here — which is portable the moment you can find it."
+    },
+    {
+      "pattern": "integrated-body",
+      "text": "Your body is political, ancestral, tender, and wise — all at once. Splitting those off is what makes it feel foreign."
+    },
+    {
+      "pattern": "safety-as-felt",
+      "text": "The body remembers safety the same way it remembers danger — through repetition. Give it small, repeated reasons to believe again."
+    },
+    {
+      "pattern": "non-dual-embodiment",
+      "text": "You are not in your body. You are your body. The \"you\" that lives separate from it is a thought, not a fact."
+    }
+  ],
+  "slides": [
+    {
+      "i": 1,
+      "role": "hook",
+      "text": "YOU'VE BEEN DISOWNING YOUR BODY.",
+      "composition": "A glitching, fragmented chrome figure standing in a vast, empty void, reflecting distorted light, conveying a sense of separation and unease."
+    },
+    {
+      "i": 2,
+      "role": "body",
+      "text": "Your body is the most loyal thing you have. It never left you.",
+      "composition": "A single, ancient, polished obsidian stone resting on a shimmering, liquid silver surface, radiating a steady, quiet luminescence from within."
+    },
+    {
+      "i": 3,
+      "role": "body",
+      "text": "The 'you' separate from it is a thought. You are all of it.",
+      "composition": "Close-up of two hands, one metallic chrome and one soft, human-like, gently merging at the fingertips against a nebula backdrop, blurring the lines between them."
+    },
+    {
+      "i": 4,
+      "role": "body",
+      "text": "Feeling foreign in your own skin? It's the cost of splitting yourself off.",
+      "composition": "An ornate, empty chrome cage, slightly ajar, casting long, distorted shadows across a dreamy, pastel-gradient floor, hinting at an internal division."
+    },
+    {
+      "i": 5,
+      "role": "body",
+      "text": "Your body learns safety through tiny repetitions. Give it reasons to believe.",
+      "composition": "A series of delicate, glowing prismatic orbs floating in a gentle spiral, each reflecting tiny, consistent pinpricks of light in a soft, cosmic expanse."
+    },
+    {
+      "i": 6,
+      "role": "body",
+      "text": "It's not about fixing. It's about witnessing what is already here.",
+      "composition": "A single, stylized, cel-shaded eye, partially obscured by a shimmering veil of light, gazing calmly at a reflection of itself in still, chrome water."
+    },
+    {
+      "i": 7,
+      "role": "cta",
+      "text": "You don't need to go anywhere to be home.",
+      "composition": "A softly glowing, arched architectural portal opening onto a serene, starry inner landscape, inviting a sense of quiet belonging and inner peace."
+    }
+  ],
+  "caption": "Been feeling disconnected from yourself lately? This is for you. It's not about forcing anything, just coming back to the truest home you've got. It's okay. You're here now.\n\n#embodiment\n#alvvocreates\n#innerwisdom\n#bodyawareness\n#findinghome"
+}

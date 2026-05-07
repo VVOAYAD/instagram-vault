@@ -1,6 +1,6 @@
 {
   "topped_up_total": 10.0,
-  "spent_total": 1.954,
+  "spent_total": 2.095,
   "runs": [
     {
       "date": "2026-04-26",
@@ -72,6 +72,12 @@
     {
       "date": "2026-05-06",
       "domain": "Shadow & self",
+      "cost": 0.141,
+      "images": 7
+    },
+    {
+      "date": "2026-05-07",
+      "domain": "Embodiment",
       "cost": 0.141,
       "images": 7
     }
