@@ -2,6 +2,9 @@
 Journal/
 Downloads/
 .obsidian/
+.env
+.env.local
+output/test_slides/
 
 # Pipeline state (local only)
 .processed.json
@@ -10,3 +13,17 @@ __pycache__/
 *.pyc
 
 # output/ must stay tracked — Instagram fetches slide images from GitHub CDN
+
+# Windows folder noise
+desktop.ini
+Thumbs.db
+.DS_Store
+
+# Tool caches
+.playwright-mcp/
+
+# Machine-specific Claude state (keep agents/, commands/, CLAUDE.md)
+.claude/settings.local.json
+.claude/cache/
+.claude/sessions/
+.claude/todos/

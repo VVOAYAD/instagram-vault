@@ -1,0 +1,34 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(\"C:/Users/Administrator/AppData/Local/Programs/Python/Python312/python.exe\" crop_refs.py)",
+      "Bash(\"C:/Users/Administrator/AppData/Local/Programs/Python/Python312/python.exe\" -m pip install --quiet python-telegram-bot python-dotenv yt-dlp faster-whisper pytesseract Pillow)",
+      "Bash(\"C:/Users/Administrator/AppData/Local/Programs/Python/Python312/python.exe\" -c \"import telegram_bot; print\\('IMPORT_OK'\\)\")",
+      "Bash(\"C:/Users/Administrator/AppData/Local/Programs/Python/Python312/python.exe\" telegram_bot.py)",
+      "Bash(curl -sS -m 10 \"https://api.telegram.org/bot8574015733:AAGL7UI4pfYdF6OcxCj60H1ZWWAfqE5hM70/getMe\")",
+      "Bash(curl -sS -m 10 -4 \"https://api.telegram.org/bot8574015733:AAGL7UI4pfYdF6OcxCj60H1ZWWAfqE5hM70/getMe\")",
+      "Bash(nslookup api.telegram.org)",
+      "Bash(C:/Users/Administrator/AppData/Local/Programs/Python/Python312/python.exe -c ' *)",
+      "Bash(curl -sSL -o /c/Users/Administrator/Desktop/instagram_system/fonts/PlayfairDisplay-Italic.ttf \"https://github.com/google/fonts/raw/main/ofl/playfairdisplay/PlayfairDisplay-Italic%5Bwght%5D.ttf\")",
+      "Bash(\"C:/Users/Administrator/AppData/Local/Programs/Python/Python312/python.exe\" painted_carousel.py --count 1)",
+      "Bash(\"C:/Users/Administrator/AppData/Local/Programs/Python/Python312/python.exe\" -m yt_dlp -o \"/c/Users/Administrator/Desktop/instagram_system/styles/fallenpoet/%\\(title\\)s_%\\(id\\)s.%\\(ext\\)s\" --write-info-json \"https://www.instagram.com/p/DXsI4P5kV1N/\")",
+      "Bash(\"C:/Users/Administrator/AppData/Local/Programs/Python/Python312/python.exe\" -m yt_dlp --cookies-from-browser chrome -o \"/c/Users/Administrator/Desktop/instagram_system/styles/fallenpoet/%\\(id\\)s_%\\(playlist_index\\)s.%\\(ext\\)s\" \"https://www.instagram.com/p/DXsI4P5kV1N/\")",
+      "Bash(\"C:/Users/Administrator/AppData/Local/Programs/Python/Python312/python.exe\" painted_carousel.py --style fallenpoet --count 1)",
+      "Bash(\"C:/Users/Administrator/AppData/Local/Programs/Python/Python312/python.exe\" painted_carousel.py --style fallenpoet --count 3)",
+      "Bash(curl -sSL -o /c/Users/Administrator/Desktop/instagram_system/fonts/BebasNeue-Regular.ttf \"https://github.com/google/fonts/raw/main/ofl/bebasneue/BebasNeue-Regular.ttf\")",
+      "Bash(\"C:/Users/Administrator/AppData/Local/Programs/Python/Python312/python.exe\" split_carousel.py --style fallenpoet --count 2)",
+      "Bash(export GEMINI_API=$\\(grep GEMINI_API /c/Users/Administrator/Desktop/instagram_system/.env)",
+      "Bash(\"C:/Users/Administrator/AppData/Local/Programs/Python/Python312/python.exe\" split_carousel.py --style fallenpoet --count 1)",
+      "Bash(curl -sSL -o \"/c/Users/Administrator/Desktop/instagram_system/styles/_seed/seed_pin_01.jpg\" \"https://i.pinimg.com/1200x/38/a7/b3/38a7b3e6fa8b1427c444f663f6ffcb65.jpg\")",
+      "WebFetch(domain:higgsfield.ai)",
+      "WebFetch(domain:www.imagine.art)",
+      "WebFetch(domain:openai.com)",
+      "WebFetch(domain:techcrunch.com)",
+      "WebFetch(domain:developers.openai.com)"
+    ],
+    "additionalDirectories": [
+      "C:\\Users\\Administrator\\.claude",
+      "C:\\Users\\Administrator\\Desktop\\instagram system samples\\1"
+    ]
+  }
+}

@@ -41,7 +41,17 @@ PYTHONIOENCODING=utf-8 GEMINI_API="your_key" python post.py --plan
 - IG access token expires every 60 days — next due late May 2026
 
 ## Voice
-Wise older sister / coach. Warm, direct, human. Teaches by naming patterns + offering awareness. No mystical jargon ("vessel", "frequency", "portal" are banned). No invented techniques (ice, tapping, breathwork methods — Alvvo doesn't teach those). Only universal awareness moves: notice, pause, feel, witness, name, slow down.
+Wise older sister / coach. Warm, direct, human. **Scientific spine** — name the mechanism in PLAIN ENGLISH (not clinical Latin), name the pattern it produces, give the move. Same warmth, harder edge. No inspirational-poster phrasing — Alvvo said the old copy was "bloat and bad and generic" (2026-05-04).
+
+Slide structure: (1) mechanism in plain English, (2) pattern it produces, (3) interrupt/move. Short. No fluff.
+
+Scientific = SPECIFIC concrete description, not vocabulary. Bad: "your dorsal vagal branch is freeze-coded." Good: "your body learned to go still when affection felt unsafe."
+
+Banned clinical terms (translate, don't use): polyvagal, sympathetic/parasympathetic, default mode network, interoception, IFS, allostatic load, fawn response, attachment styles (use these concepts but in everyday language).
+
+Banned words/phrases: "vessel", "frequency", "portal", vague intransitive verbs (become/emerge/radiate/align/flow without a specific referent), rhetorical questions with obvious answers, anything a Pinterest graphic would say.
+
+No invented techniques (ice, tapping, breathwork — Alvvo doesn't teach those). Only universal awareness moves: notice, pause, feel, witness, name, slow down.
 
 ## Themes (30, rotating by day of year)
 philosophy · nervous system · patterns & habits · people-pleasing & boundaries · overthinking · self-worth · sovereignty & business · growth · shadow & trauma
@@ -52,20 +62,18 @@ philosophy · nervous system · patterns & habits · people-pleasing & boundarie
 ## Improvements
 *(add your ideas here)*
 
-## Last session — 2026-04-15
-- FULL REBUILD. Deleted ~17 bloat files, 4 dirs. One pipeline: `post.py`.
-- Switched image gen to Nano Banana 2 → text baked into art, no more PIL overlays.
-- Built `aesthetic.md` + copied 34 inspo images to `style_refs/` (fed to model per slide).
-- Dialed voice: wise sister coach, no mystical jargon, no invented techniques.
-- Expanded themes from 8 to 30 (practical growth topics, not just philosophy).
-- Added `--plan` mode for free tone-testing.
-- Billing enabled on Gemini API, $5 budget alert set.
-- First live generate ran clean. Aesthetic + voice both locked.
+## Last session — 2026-05-04
+- Reel-ingest pipeline hardened (`reel_ingest.py`): routes art→instagram_system, edu→alvvo.ai, uses Gemini 2.5 Flash for synthesis.
+- Telegram bot BLOCKED by Oman ISP (TCP-reset on api.telegram.org). Bot code complete, can't deploy. Two paths: proxy config or pivot to Discord/email bridge.
+- Aesthetic rebuild: 5+ iterations, no lock yet. Discovered fallenpoet uses split-panel diptychs + ALL-CAPS condensed sans — not painted oil portraits. Built `split_carousel.py`.
+- Voice updated: scientific = plain-English specificity, clinical Latin terms now banned (translate them).
+- New workflow: `styles/<name>/` folder system. Rotates between style folders. Two-sample gate before any full run.
+- Copy voice corrected: "bloat and bad and generic" → scientific but plain-English. No clinical jargon.
 
 ## Next step
-- Monitor first few daily auto-posts in IG feed — check how nano-banana text reads on mobile
-- If visual variety needs a boost, add pattern rotation (The Gap / The Descent / The Mirror)
-- Add new themes anytime by editing the THEMES list in `post.py`
+- Alvvo drops ONE anchor image showing the exact look he wants (not a grid, one image). From that rebuild the generator.
+- After visual lock: rewrite `post.py` copy prompts with new scientific-but-plain-English voice.
+- Telegram: decide Discord vs email vs web-page bridge.
 
 ---
 *Update "Last session" and "Next step" above at the end of every session.*
